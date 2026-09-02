@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PISEN AI Lab · 硬件官网</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --dark:#0B0F1A; --ink:#0F172A; --sub:#475569; --line:#E2E8F0;
+    --accent:#2563EB; --accent2:#06B6D4; --grad:linear-gradient(135deg,#2563EB,#06B6D4);
+  }
+  html{ scroll-behavior:smooth; }
+  body{ font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif; color:var(--ink); background:#fff; }
+  a{ text-decoration:none; color:inherit; }
+  .wrap{ max-width:1200px; margin:0 auto; padding:0 24px; }
+
+  /* ===== 顶部栏（滚动后变为实色） ===== */
+  .topbar{ position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between; padding:22px 48px;
+    transition:background .35s, box-shadow .35s, padding .35s; }
+  .topbar.scrolled{ background:rgba(7,11,19,.85); backdrop-filter:blur(14px); padding:14px 48px;
+    box-shadow:0 4px 24px rgba(0,0,0,.35); }
+  .logo{ display:flex; align-items:center; gap:14px; }
+  .logo-img{ height:32px; display:block; }
+  .logo-text{ color:#fff; font-weight:700; font-size:20px; letter-spacing:1px; border-left:1px solid rgba(255,255,255,.3); padding-left:14px; }
+  .f-logo-img{ height:38px; display:block; }
+  .f-logo-text{ color:#fff; font-weight:700; font-size:20px; letter-spacing:1px; border-left:1px solid rgba(148,163,184,.35); padding-left:14px; white-space:nowrap; }
+  .top-actions{ display:flex; align-items:center; gap:14px; }
+  .lang{ color:#CBD5E1; font-size:14px; border:1px solid rgba(255,255,255,.25); border-radius:999px; padding:7px 16px;
+    cursor:pointer; user-select:none; transition:border-color .2s; }
+  .lang:hover{ border-color:rgba(255,255,255,.6); }
+  .lang b{ color:#fff; font-weight:600; }
+  .btn-ghost{ color:#fff; font-size:14px; border:1px solid rgba(255,255,255,.4); border-radius:999px; padding:8px 22px;
+    transition:background .2s,border-color .2s; cursor:pointer; }
+  .btn-ghost:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.7); }
+  .btn-ghost.logged-in:hover{ background:rgba(239,68,68,.14); border-color:rgba(248,113,113,.6); color:#FCA5A5; }
+
+  /* ===== 模块1 轮播 ===== */
+  .hero{ position:relative; background:radial-gradient(1200px 600px at 70% 20%, #1E293B 0%, var(--dark) 60%);
+    color:#fff; min-height:760px; overflow:hidden; }
+  .hero::after{ content:""; position:absolute; right:-160px; top:80px; width:640px; height:640px; border-radius:50%;
+    background:radial-gradient(circle, rgba(6,182,212,.22), transparent 65%); pointer-events:none; }
+  .slides{ position:relative; height:760px; }
+  .slide{ position:absolute; inset:0; display:flex; align-items:center; opacity:0; visibility:hidden;
+    transform:translateX(60px); transition:opacity .7s ease, transform .7s ease, visibility .7s; }
+  .slide.active{ opacity:1; visibility:visible; transform:translateX(0); z-index:2; }
+  .slide.leaving{ opacity:0; visibility:visible; transform:translateX(-60px); z-index:1; }
+  .hero-inner{ display:grid; grid-template-columns:1.05fr .95fr; gap:40px; align-items:center; width:100%; }
+  .tag{ display:inline-block; font-size:13px; letter-spacing:2px; color:#7DD3FC; border:1px solid rgba(125,211,252,.35);
+    border-radius:999px; padding:6px 16px; margin-bottom:26px; }
+  .slide h1{ font-size:56px; line-height:1.15; font-weight:800; margin-bottom:20px; }
+  .slide h1 span{ background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .slide p{ color:#94A3B8; font-size:18px; line-height:1.8; max-width:480px; margin-bottom:36px; }
+  .hero-cta{ display:flex; gap:16px; }
+  .hero-cta .primary{ background:var(--grad); color:#fff; font-weight:600; padding:14px 34px; border-radius:999px; font-size:15px;
+    box-shadow:0 10px 30px rgba(37,99,235,.4); transition:transform .2s, box-shadow .2s; }
+  .hero-cta .primary:hover{ transform:translateY(-2px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+  .hero-cta .secondary{ color:#E2E8F0; border:1px solid rgba(255,255,255,.3); padding:14px 34px; border-radius:999px; font-size:15px;
+    transition:background .2s; }
+  .hero-cta .secondary:hover{ background:rgba(255,255,255,.1); }
+  .hero-visual{ position:relative; display:flex; justify-content:center; }
+  .device{ width:340px; height:420px; border-radius:36px; border:1px solid rgba(148,163,184,.25);
+    box-shadow:0 40px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
+    display:flex; align-items:center; justify-content:center; position:relative; transition:transform .5s; }
+  .slide.active .device{ animation:float 5s ease-in-out infinite; }
+  @keyframes float{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-14px);} }
+  .device::before{ content:""; position:absolute; inset:18px; border-radius:26px; background:var(--dev-grad, linear-gradient(135deg, rgba(37,99,235,.35), rgba(6,182,212,.25))); }
+  .device span{ position:relative; font-size:15px; color:#fff; letter-spacing:3px; }
+  .v1{ background:linear-gradient(160deg,#1E3A8A,#0F172A);} .v2{ background:linear-gradient(160deg,#0E7490,#0F172A);}
+  .v3{ background:linear-gradient(160deg,#4C1D95,#0F172A);} .v4{ background:linear-gradient(160deg,#9F1239,#0F172A);}
+  .v5{ background:linear-gradient(160deg,#134E4A,#0F172A);}
+
+  .carousel-ui{ position:absolute; bottom:44px; left:0; right:0; display:flex; align-items:center; justify-content:center; gap:28px; z-index:10; }
+  .arrow{ width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.25); color:#CBD5E1;
+    display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; transition:all .2s; background:transparent; }
+  .arrow:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.6); color:#fff; }
+  .dots{ display:flex; gap:10px; }
+  .dot{ width:8px; height:8px; border-radius:999px; background:rgba(255,255,255,.25); cursor:pointer; transition:all .3s; border:none; padding:0; }
+  .dot.on{ width:28px; background:var(--accent2); }
+
+  /* ===== 通用区块 ===== */
+  section{ padding:110px 0; }
+  .sec-head{ text-align:center; margin-bottom:64px; }
+  .sec-kicker{ color:var(--accent); font-size:14px; font-weight:700; letter-spacing:3px; margin-bottom:14px; }
+  .sec-title{ font-size:38px; font-weight:800; }
+  .sec-desc{ color:var(--sub); font-size:16px; margin-top:14px; }
+
+  /* 滚动渐入动画 */
+  .reveal{ opacity:0; transform:translateY(36px); transition:opacity .8s ease, transform .8s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  /* ===== 模块2 APP入口（卡片式） ===== */
+  .app-entry{ background:#F8FAFC; }
+  .btn-big{ display:inline-block; background:var(--ink); color:#fff; padding:15px 40px; border-radius:999px; font-size:15px;
+    font-weight:600; transition:transform .2s, box-shadow .2s; cursor:pointer; white-space:nowrap; }
+  .btn-big:hover{ transform:translateY(-2px); box-shadow:0 14px 34px rgba(15,23,42,.3); }
+  .app-card{ background:#fff; border:1px solid var(--line); border-radius:30px; padding:52px 56px;
+    box-shadow:0 24px 60px rgba(15,23,42,.08); }
+  .app-card-head{ display:flex; align-items:center; gap:22px; padding-bottom:38px; margin-bottom:44px;
+    border-bottom:1px solid var(--line); }
+  .app-icon{ width:76px; height:76px; flex:none; border-radius:20px; background:var(--grad);
+    box-shadow:0 14px 34px rgba(37,99,235,.3); display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:28px; font-weight:800; }
+  .app-card-title{ flex:1; }
+  .app-card-title h2{ font-size:30px; font-weight:800; margin-bottom:8px; }
+  .app-card-title p{ color:var(--sub); font-size:15px; }
+  .app-screens{ display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
+  .screen-card{ background:#F8FAFC; border:1px solid var(--line); border-radius:22px; padding:30px 24px 26px;
+    text-align:center; transition:transform .3s, box-shadow .3s; }
+  .screen-card:hover{ transform:translateY(-8px); box-shadow:0 24px 48px rgba(15,23,42,.12); }
+  .screen-card h4{ font-size:17px; margin:22px 0 8px; }
+  .screen-card p{ color:var(--sub); font-size:13px; line-height:1.7; }
+  .mini-phone{ width:150px; height:300px; margin:0 auto; border-radius:24px; background:var(--dark);
+    padding:8px; box-shadow:0 20px 44px rgba(15,23,42,.25); }
+  .mini-scr{ width:100%; height:100%; border-radius:17px; background:linear-gradient(170deg,#16213E,#0B0F1A);
+    padding:16px 12px; display:flex; flex-direction:column; gap:10px; overflow:hidden; }
+  /* 首页屏 */
+  .mp-status{ height:8px; width:46%; border-radius:99px; background:rgba(255,255,255,.25); }
+  .mp-title{ height:12px; width:70%; border-radius:99px; background:rgba(255,255,255,.5); margin-top:2px; }
+  .mp-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+  .mp-tile{ height:56px; border-radius:10px; background:rgba(37,99,235,.22); border:1px solid rgba(59,130,246,.35); }
+  .mp-tile:nth-child(2){ background:rgba(6,182,212,.2); border-color:rgba(34,211,238,.3); }
+  .mp-tile:nth-child(3){ background:rgba(139,92,246,.18); border-color:rgba(167,139,250,.3); }
+  .mp-tile:nth-child(4){ background:rgba(16,185,129,.16); border-color:rgba(52,211,153,.3); }
+  /* 录音屏 */
+  .mp-timer{ text-align:center; color:#fff; font-size:20px; font-weight:700; letter-spacing:2px; margin-top:10px; font-family:"Courier New",monospace; }
+  .mp-wave{ flex:1; display:flex; align-items:center; justify-content:center; gap:4px; }
+  .mp-wave i{ width:4px; border-radius:99px; background:var(--accent2); animation:wave 1.2s ease-in-out infinite; }
+  @keyframes wave{ 0%,100%{ transform:scaleY(.35);} 50%{ transform:scaleY(1);} }
+  .mp-rec{ width:34px; height:34px; margin:0 auto 6px; border-radius:50%; background:#EF4444;
+    animation:pulse 1.6s infinite; }
+  @keyframes pulse{ 0%,100%{ box-shadow:0 0 0 5px rgba(239,68,68,.25);} 50%{ box-shadow:0 0 0 9px rgba(239,68,68,.12);} }
+  /* 翻译屏 */
+  .mp-bubble{ max-width:92%; border-radius:12px; padding:9px 11px; font-size:10px; line-height:1.5; text-align:left; }
+  .mp-bubble.zh{ align-self:flex-start; background:rgba(37,99,235,.32); color:#DBEAFE; border-bottom-left-radius:4px; }
+  .mp-bubble.en{ align-self:flex-end; background:rgba(255,255,255,.12); color:#E2E8F0; border-bottom-right-radius:4px; }
+  .mp-swap{ align-self:center; width:22px; height:22px; border-radius:50%; background:var(--grad); color:#fff;
+    font-size:11px; display:flex; align-items:center; justify-content:center; }
+
+  /* ===== 模块3 产品交替 ===== */
+  .prod-row{ display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; margin-bottom:110px; }
+  .prod-row:last-child{ margin-bottom:0; }
+  .prod-row.flip .prod-img{ order:2; }
+  .prod-img{ height:380px; border-radius:28px; position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center; color:#fff; transition:transform .4s, box-shadow .4s; cursor:pointer; }
+  .prod-img:hover{ transform:scale(1.02); box-shadow:0 30px 60px rgba(15,23,42,.25); }
+  .prod-img .ph{ font-size:15px; letter-spacing:2px; color:rgba(255,255,255,.85); background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.25); padding:10px 26px; border-radius:999px; }
+  .p1{ background:linear-gradient(135deg,#1E3A8A,#2563EB); } .p2{ background:linear-gradient(135deg,#0E7490,#06B6D4); }
+  .p3{ background:linear-gradient(135deg,#4C1D95,#8B5CF6); } .p4{ background:linear-gradient(135deg,#9F1239,#F43F5E); }
+  .p5{ background:linear-gradient(135deg,#134E4A,#10B981); }
+  .prod-num{ font-size:14px; font-weight:800; color:var(--accent); letter-spacing:2px; margin-bottom:12px; }
+  .prod-info h3{ font-size:30px; font-weight:800; margin-bottom:16px; }
+  .prod-info p{ color:var(--sub); font-size:16px; line-height:1.85; margin-bottom:24px; }
+  .prod-tags{ display:flex; gap:10px; flex-wrap:wrap; }
+  .prod-tags span{ font-size:13px; color:#334155; background:#F1F5F9; border:1px solid var(--line); padding:7px 16px; border-radius:999px; }
+
+  /* ===== 模块4 团队+合作 ===== */
+  .team-contact{ background:var(--dark); color:#fff; }
+  .tc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:80px; }
+  .tc-grid .sec-kicker{ color:#7DD3FC; }
+  .tc-left h2{ font-size:34px; font-weight:800; margin-bottom:14px; }
+  .tc-left>p{ color:#94A3B8; font-size:16px; line-height:1.8; margin-bottom:38px; }
+  .team-item{ display:flex; gap:18px; padding:22px 0; border-top:1px solid rgba(148,163,184,.18); transition:padding-left .3s; }
+  .team-item:hover{ padding-left:8px; }
+  .team-ico{ width:46px; height:46px; flex:none; border-radius:13px; background:rgba(37,99,235,.18); border:1px solid rgba(59,130,246,.35);
+    display:flex; align-items:center; justify-content:center; color:#7DD3FC; font-weight:700; }
+  .team-item h4{ font-size:17px; margin-bottom:6px; }
+  .team-item p{ color:#94A3B8; font-size:14px; line-height:1.7; }
+  .form-card{ background:rgba(255,255,255,.05); border:1px solid rgba(148,163,184,.2); border-radius:24px; padding:40px; }
+  .form-card h3{ font-size:24px; font-weight:700; margin-bottom:8px; }
+  .form-card>p{ color:#94A3B8; font-size:14px; margin-bottom:28px; }
+  .f-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .f-field{ margin-bottom:16px; }
+  .f-field input,.f-field textarea{ width:100%; background:rgba(255,255,255,.06); border:1px solid rgba(148,163,184,.3);
+    border-radius:12px; padding:13px 16px; color:#E2E8F0; font-size:14px; font-family:inherit; outline:none; transition:border-color .2s; }
+  .f-field input:focus,.f-field textarea:focus{ border-color:var(--accent2); }
+  .f-field textarea{ height:104px; resize:none; }
+  .f-submit{ width:100%; background:var(--grad); color:#fff; border:none; border-radius:12px; padding:15px; cursor:pointer;
+    font-size:15px; font-weight:700; font-family:inherit; box-shadow:0 10px 26px rgba(37,99,235,.35); transition:transform .2s, opacity .2s; }
+  .f-submit:hover{ transform:translateY(-2px); }
+  .f-submit.sent{ background:linear-gradient(135deg,#059669,#10B981); pointer-events:none; }
+
+  /* ===== 页脚 ===== */
+  footer{ background:#070B13; color:#94A3B8; padding:72px 0 36px; }
+  .f-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:48px; padding-bottom:48px; border-bottom:1px solid rgba(148,163,184,.15); }
+  .f-brand{ color:#fff; font-weight:700; font-size:18px; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+  .f-col h5{ color:#fff; font-size:15px; margin-bottom:18px; }
+  .f-col a{ display:block; font-size:14px; margin-bottom:12px; transition:color .2s; }
+  .f-col a:hover{ color:#fff; }
+  .f-bottom{ display:flex; justify-content:space-between; padding-top:28px; font-size:13px; color:#64748B; }
+
+  /* 登录弹窗 */
+  .login-mask{ position:fixed; inset:0; z-index:300; background:rgba(2,6,23,.62); backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:opacity .3s, visibility .3s; }
+  .login-mask.show{ opacity:1; visibility:visible; }
+  .login-card{ position:relative; width:400px; max-width:calc(100vw - 48px); background:#111827; border:1px solid rgba(148,163,184,.25);
+    border-radius:24px; padding:42px 40px 34px; box-shadow:0 40px 90px rgba(0,0,0,.5);
+    transform:translateY(24px) scale(.96); transition:transform .35s; }
+  .login-mask.show .login-card{ transform:none; }
+  .login-close{ position:absolute; top:16px; right:18px; width:34px; height:34px; border:none; border-radius:50%;
+    background:rgba(255,255,255,.08); color:#94A3B8; font-size:18px; cursor:pointer; transition:background .2s,color .2s; }
+  .login-close:hover{ background:rgba(255,255,255,.16); color:#fff; }
+  .login-card h3{ color:#fff; font-size:24px; font-weight:800; margin-bottom:8px; }
+  .login-sub{ color:#94A3B8; font-size:14px; margin-bottom:28px; }
+  .lg-field{ margin-bottom:16px; }
+  .lg-field input{ width:100%; background:rgba(255,255,255,.06); border:1px solid rgba(148,163,184,.3); border-radius:12px;
+    padding:14px 16px; color:#E2E8F0; font-size:15px; font-family:inherit; outline:none; transition:border-color .2s; }
+  .lg-field input:focus{ border-color:var(--accent2); }
+  .lg-code{ display:flex; gap:12px; }
+  .lg-code input{ flex:1; }
+  .lg-code button{ flex:none; padding:0 18px; border-radius:12px; border:1px solid rgba(103,232,249,.5); background:transparent;
+    color:#67E8F9; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .2s; white-space:nowrap; }
+  .lg-code button:hover:not(:disabled){ background:rgba(34,211,238,.12); }
+  .lg-code button:disabled{ opacity:.45; cursor:not-allowed; }
+  .lg-err{ min-height:20px; color:#F87171; font-size:13px; margin-bottom:12px; }
+  .lg-submit{ width:100%; padding:15px; border:none; border-radius:12px; background:var(--grad); color:#fff;
+    font-size:16px; font-weight:700; font-family:inherit; cursor:pointer; box-shadow:0 10px 26px rgba(37,99,235,.35);
+    transition:transform .2s; }
+  .lg-submit:hover{ transform:translateY(-2px); }
+  .lg-submit.ok{ background:linear-gradient(135deg,#059669,#10B981); pointer-events:none; }
+  .lg-agree{ margin-top:18px; text-align:center; color:#64748B; font-size:12px; }
+
+  /* Toast 提示 */
+  .toast{ position:fixed; bottom:36px; left:50%; transform:translate(-50%, 80px); background:var(--ink); color:#fff;
+    padding:13px 28px; border-radius:999px; font-size:14px; z-index:400; opacity:0; transition:all .4s; pointer-events:none;
+    box-shadow:0 16px 40px rgba(0,0,0,.3); }
+  .toast.show{ opacity:1; transform:translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+<!-- 顶部栏：左 Logo / 右 中英文切换 + 登录 -->
+<header class="topbar" id="topbar">
+  <a class="logo" href="#top"><img class="logo-img" src="./logo-white.png" alt="PISEN 品胜"><span class="logo-text">AI Lab</span></a>
+  <div class="top-actions">
+    <div class="lang" id="langBtn" title="语言切换（演示）"><b>中</b> / EN</div>
+    <a class="btn-ghost" id="loginBtn">登录</a>
+  </div>
+</header>
+
+<!-- 模块1：硬件轮播（5张，自动播放） -->
+<section class="hero" id="top" style="padding:0;">
+  <div class="slides" id="slides">
+
+    <div class="slide active">
+      <div class="wrap hero-inner">
+        <div>
+          <div class="tag">PISEN AI HARDWARE · 01 / 05</div>
+          <h1>让 AI 走进<br><span>每一刻日常</span></h1>
+          <p>轮播第 1 张占位：主推硬件产品大图 + 一句话卖点。五张轮播依次展示五款核心 AI 硬件，自动播放，支持左右切换与指示点导航。</p>
+          <div class="hero-cta"><a class="primary" href="#products">了解更多</a></div>
+        </div>
+        <div class="hero-visual"><div class="device v1"><span>产品主视觉 1</span></div></div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="wrap hero-inner">
+        <div>
+          <div class="tag">PISEN AI HARDWARE · 02 / 05</div>
+          <h1>听见更懂你的<br><span>声音</span></h1>
+          <p>轮播第 2 张占位：第二款硬件的卖点文案，一句话说清核心价值，配合产品主视觉呈现。</p>
+          <div class="hero-cta"><a class="primary" href="#products">了解更多</a></div>
+        </div>
+        <div class="hero-visual"><div class="device v2"><span>产品主视觉 2</span></div></div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="wrap hero-inner">
+        <div>
+          <div class="tag">PISEN AI HARDWARE · 03 / 05</div>
+          <h1>记录灵感<br><span>从不缺席</span></h1>
+          <p>轮播第 3 张占位：第三款硬件的卖点文案，一句话说清核心价值，配合产品主视觉呈现。</p>
+          <div class="hero-cta"><a class="primary" href="#products">了解更多</a></div>
+        </div>
+        <div class="hero-visual"><div class="device v3"><span>产品主视觉 3</span></div></div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="wrap hero-inner">
+        <div>
+          <div class="tag">PISEN AI HARDWARE · 04 / 05</div>
+          <h1>看见世界<br><span>新的方式</span></h1>
+          <p>轮播第 4 张占位：第四款硬件的卖点文案，一句话说清核心价值，配合产品主视觉呈现。</p>
+          <div class="hero-cta"><a class="primary" href="#products">了解更多</a></div>
+        </div>
+        <div class="hero-visual"><div class="device v4"><span>产品主视觉 4</span></div></div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="wrap hero-inner">
+        <div>
+          <div class="tag">PISEN AI HARDWARE · 05 / 05</div>
+          <h1>陪伴，是最长情的<br><span>智能</span></h1>
+          <p>轮播第 5 张占位：第五款硬件的卖点文案，一句话说清核心价值，配合产品主视觉呈现。</p>
+          <div class="hero-cta"><a class="primary" href="#products">了解更多</a></div>
+        </div>
+        <div class="hero-visual"><div class="device v5"><span>产品主视觉 5</span></div></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="carousel-ui">
+    <button class="arrow" id="prevBtn" aria-label="上一张">‹</button>
+    <div class="dots" id="dots"></div>
+    <button class="arrow" id="nextBtn" aria-label="下一张">›</button>
+  </div>
+</section>
+
+<!-- 模块2：APP 简介入口（卡片式，点击跳转软件官网） -->
+<section class="app-entry">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">PISEN AI APP</div>
+      <div class="sec-title">一个 App，连接所有 AI 硬件</div>
+      <div class="sec-desc">设备管理、录音转写、实时翻译，尽在一个 App（占位描述）</div>
+    </div>
+    <div class="app-card reveal">
+      <div class="app-card-head">
+        <div class="app-icon">A</div>
+        <div class="app-card-title">
+          <h2>PISEN AI App</h2>
+          <p>一句话定位占位：连接所有 PISEN AI 硬件的智能中枢</p>
+        </div>
+        <a class="btn-big" href="./software.html" target="_blank" rel="noopener">了解 App 详情 →</a>
+      </div>
+      <div class="app-screens">
+        <div class="screen-card">
+          <div class="mini-phone"><div class="mini-scr">
+            <div class="mp-status"></div>
+            <div class="mp-title"></div>
+            <div class="mp-grid"><div class="mp-tile"></div><div class="mp-tile"></div><div class="mp-tile"></div><div class="mp-tile"></div></div>
+          </div></div>
+          <h4>首页 · 设备总览</h4>
+          <p>统一管理全部 AI 硬件设备，状态一目了然（占位描述）</p>
+        </div>
+        <div class="screen-card">
+          <div class="mini-phone"><div class="mini-scr">
+            <div class="mp-timer">00:12:47</div>
+            <div class="mp-wave">
+              <i style="height:18px;animation-delay:0s"></i><i style="height:34px;animation-delay:.15s"></i><i style="height:52px;animation-delay:.3s"></i><i style="height:28px;animation-delay:.45s"></i><i style="height:60px;animation-delay:.1s"></i><i style="height:40px;animation-delay:.25s"></i><i style="height:22px;animation-delay:.4s"></i><i style="height:48px;animation-delay:.05s"></i><i style="height:30px;animation-delay:.35s"></i><i style="height:56px;animation-delay:.2s"></i><i style="height:24px;animation-delay:.5s"></i><i style="height:42px;animation-delay:.12s"></i>
+            </div>
+            <div class="mp-rec"></div>
+          </div></div>
+          <h4>录音 · 实时转写</h4>
+          <p>高清录音实时转文字，说话人自动区分（占位描述）</p>
+        </div>
+        <div class="screen-card">
+          <div class="mini-phone"><div class="mini-scr">
+            <div class="mp-bubble zh">你好，今天的会议几点开始？</div>
+            <div class="mp-swap">⇅</div>
+            <div class="mp-bubble en">Hello, what time does today's meeting start?</div>
+            <div class="mp-bubble zh">下午三点，别迟到。</div>
+            <div class="mp-swap">⇅</div>
+            <div class="mp-bubble en">It starts at 3 PM. Don't be late.</div>
+          </div></div>
+          <h4>翻译 · 多语互译</h4>
+          <p>多种语言实时互译，跨语言沟通无障碍（占位描述）</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 模块3：AI 硬件产品功能（5个产品，左右交替） -->
+<section id="products">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">AI HARDWARE</div>
+      <div class="sec-title">AI 硬件产品矩阵</div>
+      <div class="sec-desc">五款产品，覆盖听、说、记、看、陪伴五大场景（占位描述）</div>
+    </div>
+
+    <div class="prod-row reveal">
+      <div class="prod-img p1"><span class="ph">产品图 · 产品一</span></div>
+      <div class="prod-info">
+        <div class="prod-num">01</div>
+        <h3>AI 硬件产品一</h3>
+        <p>核心功能描述占位：这是产品一的一段功能介绍文字，说明它解决什么问题、面向什么场景，以及最关键的差异化能力。</p>
+        <div class="prod-tags"><span>功能点 A</span><span>功能点 B</span><span>功能点 C</span></div>
+      </div>
+    </div>
+
+    <div class="prod-row flip reveal">
+      <div class="prod-img p2"><span class="ph">产品图 · 产品二</span></div>
+      <div class="prod-info">
+        <div class="prod-num">02</div>
+        <h3>AI 硬件产品二</h3>
+        <p>核心功能描述占位：这是产品二的一段功能介绍文字，说明它解决什么问题、面向什么场景，以及最关键的差异化能力。</p>
+        <div class="prod-tags"><span>功能点 A</span><span>功能点 B</span><span>功能点 C</span></div>
+      </div>
+    </div>
+
+    <div class="prod-row reveal">
+      <div class="prod-img p3"><span class="ph">产品图 · 产品三</span></div>
+      <div class="prod-info">
+        <div class="prod-num">03</div>
+        <h3>AI 硬件产品三</h3>
+        <p>核心功能描述占位：这是产品三的一段功能介绍文字，说明它解决什么问题、面向什么场景，以及最关键的差异化能力。</p>
+        <div class="prod-tags"><span>功能点 A</span><span>功能点 B</span><span>功能点 C</span></div>
+      </div>
+    </div>
+
+    <div class="prod-row flip reveal">
+      <div class="prod-img p4"><span class="ph">产品图 · 产品四</span></div>
+      <div class="prod-info">
+        <div class="prod-num">04</div>
+        <h3>AI 硬件产品四</h3>
+        <p>核心功能描述占位：这是产品四的一段功能介绍文字，说明它解决什么问题、面向什么场景，以及最关键的差异化能力。</p>
+        <div class="prod-tags"><span>功能点 A</span><span>功能点 B</span><span>功能点 C</span></div>
+      </div>
+    </div>
+
+    <div class="prod-row reveal">
+      <div class="prod-img p5"><span class="ph">产品图 · 产品五</span></div>
+      <div class="prod-info">
+        <div class="prod-num">05</div>
+        <h3>AI 硬件产品五</h3>
+        <p>核心功能描述占位：这是产品五的一段功能介绍文字，说明它解决什么问题、面向什么场景，以及最关键的差异化能力。</p>
+        <div class="prod-tags"><span>功能点 A</span><span>功能点 B</span><span>功能点 C</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 模块4：团队职能 + 合作咨询 -->
+<section class="team-contact">
+  <div class="wrap tc-grid">
+    <div class="tc-left reveal">
+      <div class="sec-kicker">OUR TEAM</div>
+      <h2>团队职能</h2>
+      <p>团队介绍占位：一支覆盖硬件、算法、设计与供应链的完整产品团队。</p>
+      <div class="team-item"><div class="team-ico">研</div><div><h4>硬件研发</h4><p>职能描述占位：负责产品的硬件架构、结构与电子设计。</p></div></div>
+      <div class="team-item"><div class="team-ico">算</div><div><h4>算法与软件</h4><p>职能描述占位：负责 AI 算法、固件与 App 软件开发。</p></div></div>
+      <div class="team-item"><div class="team-ico">设</div><div><h4>工业设计</h4><p>职能描述占位：负责产品外观、交互与用户体验设计。</p></div></div>
+      <div class="team-item"><div class="team-ico">供</div><div><h4>供应链与品控</h4><p>职能描述占位：负责量产导入、供应链管理与质量保障。</p></div></div>
+    </div>
+    <div class="form-card reveal">
+      <h3>合作咨询</h3>
+      <p>留下您的信息，我们的商务团队将在 1–2 个工作日内联系您。</p>
+      <form id="consultForm">
+        <div class="f-row">
+          <div class="f-field"><input placeholder="您的称呼" required></div>
+          <div class="f-field"><input placeholder="公司 / 机构"></div>
+        </div>
+        <div class="f-field"><input placeholder="联系方式（手机 / 邮箱）" required></div>
+        <div class="f-field"><textarea placeholder="请简单描述您的合作需求…"></textarea></div>
+        <button class="f-submit" type="submit">提交咨询</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- 页脚（含服务中心） -->
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <a class="f-brand" href="#top"><img class="f-logo-img" src="./logo-white.png" alt="PISEN 品胜"><span class="f-logo-text">AI Lab</span></a>
+        <p style="font-size:14px;line-height:1.8;max-width:280px;">品牌简介占位：专注 AI 硬件与智能软件体验的创新团队。</p>
+      </div>
+      <div class="f-col"><h5>服务中心</h5><a href="#">申请售后</a><a href="#">服务政策</a><a href="#">保修查询</a><a href="#">服务网点</a></div>
+      <div class="f-col"><h5>关于我们</h5><a href="#">公司介绍</a><a href="#">新闻动态</a><a href="#">加入我们</a></div>
+      <div class="f-col"><h5>联系方式</h5><a href="#">商务合作：biz@example.com</a><a href="#">客服热线：400-000-0000</a><a href="#">社交媒体</a></div>
+    </div>
+    <div class="f-bottom"><span>© 2026 PISEN AI Lab. 版权所有</span><span>备案号占位：粤ICP备00000000号</span></div>
+  </div>
+</footer>
+
+<!-- 登录弹窗 -->
+<div class="login-mask" id="loginMask">
+  <div class="login-card">
+    <button class="login-close" id="loginClose" aria-label="关闭">×</button>
+    <h3>欢迎登录</h3>
+    <p class="login-sub">使用手机号验证码登录 PISEN AI Lab</p>
+    <div class="lg-field"><input id="phoneInput" type="tel" maxlength="11" placeholder="请输入手机号"></div>
+    <div class="lg-field lg-code">
+      <input id="codeInput" type="text" maxlength="6" placeholder="请输入验证码">
+      <button id="sendCodeBtn" type="button">获取验证码</button>
+    </div>
+    <div class="lg-err" id="loginErr"></div>
+    <button class="lg-submit" id="doLoginBtn" type="button">登 录</button>
+    <p class="lg-agree">登录即代表同意《用户协议》与《隐私政策》</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  /* ===== 顶部栏滚动效果 ===== */
+  var topbar = document.getElementById('topbar');
+  window.addEventListener('scroll', function(){
+    topbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  /* ===== Toast ===== */
+  var toast = document.getElementById('toast'), toastTimer;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+  }
+
+  /* ===== 轮播 ===== */
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var dotsBox = document.getElementById('dots');
+  var current = 0, timer = null, DELAY = 4500;
+
+  slides.forEach(function(_, i){
+    var d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' on' : '');
+    d.setAttribute('aria-label', '第 ' + (i+1) + ' 张');
+    d.addEventListener('click', function(){ goTo(i); restart(); });
+    dotsBox.appendChild(d);
+  });
+  var dots = Array.prototype.slice.call(dotsBox.children);
+
+  function goTo(n){
+    var next = (n + slides.length) % slides.length;
+    if (next === current) return;
+    var prev = current;
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add('leaving');
+    setTimeout(function(){ slides[prev].classList.remove('leaving'); }, 700);
+    slides[next].classList.add('active');
+    dots[prev].classList.remove('on');
+    dots[next].classList.add('on');
+    current = next;
+  }
+  function nextSlide(){ goTo(current + 1); }
+  function prevSlide(){ goTo(current - 1); }
+  function restart(){ clearInterval(timer); timer = setInterval(nextSlide, DELAY); }
+
+  document.getElementById('nextBtn').addEventListener('click', function(){ nextSlide(); restart(); });
+  document.getElementById('prevBtn').addEventListener('click', function(){ prevSlide(); restart(); });
+
+  var hero = document.querySelector('.hero');
+  hero.addEventListener('mouseenter', function(){ clearInterval(timer); });
+  hero.addEventListener('mouseleave', restart);
+  restart();
+
+  /* ===== 滚动渐入 ===== */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  /* ===== 表单提交 ===== */
+  document.getElementById('consultForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var btn = this.querySelector('.f-submit');
+    btn.textContent = '✓ 已提交，我们会尽快联系您';
+    btn.classList.add('sent');
+    showToast('合作咨询已提交（演示）');
+    this.reset();
+    setTimeout(function(){ btn.textContent = '提交咨询'; btn.classList.remove('sent'); }, 3500);
+  });
+
+  /* ===== 语言 / 登录（演示） ===== */
+  document.getElementById('langBtn').addEventListener('click', function(){ showToast('多语言切换为占位演示'); });
+  /* ===== 登录弹窗 ===== */
+  var loginMask = document.getElementById('loginMask');
+  var phoneInput = document.getElementById('phoneInput');
+  var codeInput = document.getElementById('codeInput');
+  var sendCodeBtn = document.getElementById('sendCodeBtn');
+  var doLoginBtn = document.getElementById('doLoginBtn');
+  var loginErr = document.getElementById('loginErr');
+  var codeTimer = null;
+
+  function setLoggedIn(){
+    var lb = document.getElementById('loginBtn');
+    lb.textContent = '已登录';
+    lb.classList.add('logged-in');
+  }
+  function setLoggedOut(){
+    var lb = document.getElementById('loginBtn');
+    lb.textContent = '登录';
+    lb.classList.remove('logged-in');
+  }
+  try{ if (localStorage.getItem('pisen_login')) setLoggedIn(); }catch(e){}
+
+  function openLogin(){ loginErr.textContent = ''; loginMask.classList.add('show'); setTimeout(function(){ phoneInput.focus(); }, 300); }
+  function closeLogin(){ loginMask.classList.remove('show'); }
+  function validPhone(){ return /^1\d{10}$/.test(phoneInput.value.trim()); }
+
+  var loginBtnEl = document.getElementById('loginBtn');
+  loginBtnEl.addEventListener('click', function(){
+    if (this.classList.contains('logged-in')){
+      try{ localStorage.removeItem('pisen_login'); }catch(e){}
+      setLoggedOut();
+      showToast('已退出登录');
+    } else openLogin();
+  });
+  loginBtnEl.addEventListener('mouseenter', function(){ if (this.classList.contains('logged-in')) this.textContent = '退出登录'; });
+  loginBtnEl.addEventListener('mouseleave', function(){ if (this.classList.contains('logged-in')) this.textContent = '已登录'; });
+  document.getElementById('loginClose').addEventListener('click', closeLogin);
+  loginMask.addEventListener('click', function(e){ if (e.target === loginMask) closeLogin(); });
+
+  sendCodeBtn.addEventListener('click', function(){
+    if (!validPhone()){ loginErr.textContent = '请输入正确的 11 位手机号'; phoneInput.focus(); return; }
+    loginErr.textContent = '';
+    showToast('验证码已发送（演示环境，任意验证码可登录）');
+    var s = 60;
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.textContent = s + 's 后重发';
+    codeTimer = setInterval(function(){
+      s--;
+      if (s <= 0){ clearInterval(codeTimer); sendCodeBtn.disabled = false; sendCodeBtn.textContent = '获取验证码'; }
+      else sendCodeBtn.textContent = s + 's 后重发';
+    }, 1000);
+  });
+
+  doLoginBtn.addEventListener('click', function(){
+    if (!validPhone()){ loginErr.textContent = '请输入正确的 11 位手机号'; return; }
+    if (!/^\d{4,6}$/.test(codeInput.value.trim())){ loginErr.textContent = '请输入 4–6 位数字验证码'; return; }
+    loginErr.textContent = '';
+    doLoginBtn.textContent = '✓ 登录成功';
+    doLoginBtn.classList.add('ok');
+    setTimeout(function(){
+      closeLogin();
+      try{ localStorage.setItem('pisen_login', phoneInput.value.trim()); }catch(e){}
+      setLoggedIn();
+      showToast('登录成功，欢迎回来（演示）');
+      doLoginBtn.textContent = '登 录';
+      doLoginBtn.classList.remove('ok');
+    }, 900);
+  });
+})();
+</script>
+</body>
+</html>
