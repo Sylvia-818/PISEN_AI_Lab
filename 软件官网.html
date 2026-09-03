@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PISEN AI Lab · 软件官网</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --dark:#0B0F1A; --ink:#0F172A; --sub:#475569; --line:#E2E8F0;
+    --accent:#2563EB; --accent2:#06B6D4; --grad:linear-gradient(135deg,#2563EB,#06B6D4);
+  }
+  html{ scroll-behavior:smooth; }
+  body{ font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif; color:var(--ink); background:#fff; }
+  a{ text-decoration:none; color:inherit; }
+  .wrap{ max-width:1200px; margin:0 auto; padding:0 24px; }
+
+  /* 顶部栏 */
+  .topbar{ position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between; padding:22px 48px;
+    transition:background .35s, box-shadow .35s, padding .35s; }
+  .topbar.scrolled{ background:rgba(7,11,19,.85); backdrop-filter:blur(14px); padding:14px 48px;
+    box-shadow:0 4px 24px rgba(0,0,0,.35); }
+  .logo{ display:flex; align-items:center; gap:14px; }
+  .logo-img{ height:32px; display:block; }
+  .logo-text{ color:#fff; font-weight:700; font-size:20px; letter-spacing:1px; border-left:1px solid rgba(255,255,255,.3); padding-left:14px; }
+  .f-logo-img{ height:38px; display:block; }
+  .f-logo-text{ color:#fff; font-weight:700; font-size:20px; letter-spacing:1px; border-left:1px solid rgba(148,163,184,.35); padding-left:14px; white-space:nowrap; }
+  .top-actions{ display:flex; align-items:center; gap:14px; }
+  .main-nav{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:flex; gap:38px; }
+  .main-nav a{ color:#CBD5E1; font-size:14px; padding:6px 0; position:relative; transition:color .2s; }
+  .main-nav a:hover{ color:#fff; }
+  .main-nav a::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:2px; border-radius:2px;
+    background:var(--grad); transform:scaleX(0); transform-origin:left; transition:transform .25s; }
+  .main-nav a:hover::after{ transform:scaleX(1); }
+  .main-nav a.on{ color:#fff; }
+  .main-nav a.on::after{ transform:scaleX(1); }
+  .lang{ color:#CBD5E1; font-size:14px; border:1px solid rgba(255,255,255,.25); border-radius:999px; padding:7px 16px;
+    cursor:pointer; user-select:none; transition:border-color .2s; }
+  .lang:hover{ border-color:rgba(255,255,255,.6); }
+  .lang b{ color:#fff; font-weight:600; }
+  .btn-ghost{ color:#fff; font-size:14px; border:1px solid rgba(255,255,255,.4); border-radius:999px; padding:8px 22px;
+    transition:background .2s,border-color .2s; cursor:pointer; }
+  .btn-ghost:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.7); }
+  .btn-ghost.logged-in:hover{ background:rgba(239,68,68,.14); border-color:rgba(248,113,113,.6); color:#FCA5A5; }
+  .btn-solid{ color:#fff; font-size:14px; background:var(--grad); border-radius:999px; padding:9px 24px; font-weight:600;
+    box-shadow:0 6px 20px rgba(37,99,235,.35); cursor:pointer; transition:transform .2s, box-shadow .2s; }
+  .btn-solid:hover{ transform:translateY(-2px); box-shadow:0 12px 30px rgba(37,99,235,.5); }
+
+  /* 模块1：首屏（深色 · 居中） */
+  .hero{ position:relative; background:radial-gradient(1100px 560px at 75% 15%, #1E293B 0%, var(--dark) 60%);
+    color:#fff; text-align:center; padding:200px 0 150px; overflow:hidden; }
+  .hero::after{ content:""; position:absolute; left:-180px; bottom:-120px; width:560px; height:560px; border-radius:50%;
+    background:radial-gradient(circle, rgba(37,99,235,.2), transparent 65%); pointer-events:none; }
+  .tag{ display:inline-block; font-size:13px; letter-spacing:2px; color:#7DD3FC; border:1px solid rgba(125,211,252,.35);
+    border-radius:999px; padding:6px 16px; margin-bottom:26px; }
+  .hero h1{ font-size:58px; line-height:1.18; font-weight:800; margin-bottom:20px; }
+  .hero h1 span{ background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero p{ color:#94A3B8; font-size:18px; line-height:1.8; max-width:560px; margin:0 auto 40px; }
+  .hero-cta{ display:flex; justify-content:center; gap:16px; margin-bottom:40px; }
+  .hc-primary{ background:#fff; color:var(--ink); font-size:15px; font-weight:700; border-radius:999px; padding:14px 38px;
+    cursor:pointer; transition:transform .2s, box-shadow .2s; }
+  .hc-primary:hover{ transform:translateY(-2px); box-shadow:0 16px 36px rgba(255,255,255,.14); }
+  .hc-ghost{ color:#E2E8F0; font-size:15px; font-weight:600; border:1px solid rgba(255,255,255,.35); border-radius:999px;
+    padding:14px 34px; cursor:pointer; transition:background .2s, border-color .2s; }
+  .hc-ghost:hover{ background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.7); }
+  .hero-dl{ display:flex; justify-content:center; align-items:center; gap:14px; }
+  .dl-btn{ display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.06); border:1px solid rgba(148,163,184,.28);
+    color:#fff; border-radius:14px; padding:10px 20px; cursor:pointer; transition:transform .2s, border-color .2s; }
+  .dl-btn:hover{ transform:translateY(-2px); border-color:rgba(103,232,249,.55); }
+  .dl-btn .ic{ width:24px; height:24px; border-radius:7px; background:var(--grad); }
+  .dl-btn small{ display:block; font-size:11px; color:#94A3B8; text-align:left; }
+  .dl-btn b{ font-size:14px; }
+  .qr{ width:88px; height:88px; border-radius:12px; background:
+    repeating-conic-gradient(#fff 0% 25%, #0B0F1A 0% 50%) 50% / 14px 14px; border:5px solid #fff; cursor:pointer;
+    transition:transform .3s; }
+  .qr:hover{ transform:scale(1.5); }
+  /* 左右浮动装饰卡 */
+  .float-card{ position:absolute; z-index:2; display:flex; align-items:center; gap:12px; text-align:left;
+    background:rgba(255,255,255,.05); border:1px solid rgba(148,163,184,.22); border-radius:20px; padding:16px 20px;
+    backdrop-filter:blur(8px); box-shadow:0 24px 60px rgba(0,0,0,.35); animation:float 6s ease-in-out infinite; }
+  .float-card img{ width:44px; height:44px; border-radius:12px; display:block; }
+  .float-card b{ display:block; font-size:14px; color:#fff; margin-bottom:3px; }
+  .float-card span{ font-size:12px; color:#94A3B8; }
+  .fc-left{ left:7%; top:32%; transform:rotate(-8deg); }
+  .fc-right{ right:7%; top:28%; transform:rotate(7deg); animation-delay:1.4s; }
+  .fc-dot{ width:12px; height:12px; flex:none; border-radius:50%; background:#22D3EE; box-shadow:0 0 14px #22D3EE; }
+  @keyframes float{ 0%,100%{ margin-top:0;} 50%{ margin-top:-14px;} }
+
+  /* 通用 */
+  section{ padding:110px 0; }
+  .sec-head{ text-align:center; margin-bottom:64px; }
+  .sec-kicker{ color:var(--accent); font-size:14px; font-weight:700; letter-spacing:3px; margin-bottom:14px; }
+  .sec-title{ font-size:38px; font-weight:800; }
+  .sec-desc{ color:var(--sub); font-size:16px; margin-top:14px; }
+  .reveal{ opacity:0; transform:translateY(36px); transition:opacity .8s ease, transform .8s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  /* 手机占位（浅色 · 模块2通用） */
+  .mph{ width:250px; background:#0F172A; border-radius:30px 30px 0 0; padding:8px 8px 0; box-shadow:0 30px 60px rgba(15,23,42,.18); }
+  .mscr{ background:#fff; border-radius:23px 23px 0 0; padding:18px 16px 0; overflow:hidden; height:280px; }
+  .ms-status{ height:8px; display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .ms-status::before{ content:""; width:34px; height:8px; border-radius:99px; background:#E2E8F0; }
+  .ms-status::after{ content:""; width:22px; height:8px; border-radius:99px; background:#E2E8F0; }
+  .ms-head{ height:30px; border-radius:10px; background:linear-gradient(90deg,#DBEAFE,#CFFAFE); margin-bottom:12px; }
+  .ms-wave{ height:34px; margin-bottom:12px; border-radius:10px; background:#F1F5F9; position:relative; overflow:hidden; }
+  .ms-wave::after{ content:""; position:absolute; left:12px; right:12px; top:50%; height:14px; transform:translateY(-50%);
+    background:repeating-linear-gradient(90deg, #94A3B8 0 3px, transparent 3px 8px); border-radius:2px; }
+  .ms-block{ height:52px; border-radius:12px; background:#F8FAFC; border:1px solid var(--line); margin-bottom:10px; }
+  .ms-block.hl{ background:linear-gradient(135deg,#EFF6FF,#ECFEFF); border-color:#BFDBFE; }
+  .ms-line{ height:9px; border-radius:99px; background:#E2E8F0; margin-bottom:8px; }
+  .ms-line.s{ width:62%; }
+  .mscr.v2 .ms-head{ background:linear-gradient(90deg,#EDE9FE,#CFFAFE); }
+  .mscr.v3 .ms-head{ background:linear-gradient(90deg,#CFFAFE,#DBEAFE); }
+
+  /* 模块2A：能力速览（横向滚动大卡） */
+  .f2a{ background:#fff; }
+  .cap-scroll{ display:flex; gap:26px; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none;
+    padding:6px max(24px, calc((100% - 1200px)/2)) 24px; }
+  .cap-scroll::-webkit-scrollbar{ display:none; }
+  .cap-card{ flex:0 0 560px; scroll-snap-align:start; border-radius:28px; padding:44px 44px 0; overflow:hidden;
+    background:linear-gradient(160deg,#EFF6FF 0%,#F0FDFA 100%); border:1px solid #DBEAFE;
+    display:flex; flex-direction:column; min-height:540px; }
+  .cap-card.alt{ background:linear-gradient(160deg,#F5F3FF 0%,#ECFEFF 100%); border-color:#EDE9FE; }
+  .cap-kicker{ color:var(--accent); font-size:14px; font-weight:700; margin-bottom:14px; }
+  .cap-card h3{ font-size:30px; line-height:1.32; margin-bottom:12px; }
+  .cap-card>p{ color:var(--sub); font-size:15px; line-height:1.8; max-width:430px; margin-bottom:30px; }
+  .cap-card .mph{ margin:0 auto; }
+  .cap-bar{ display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+  .cap-hint{ color:#94A3B8; font-size:13px; }
+  .cap-btns{ display:flex; gap:10px; }
+  .cap-btns button{ width:42px; height:42px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--ink);
+    font-size:16px; cursor:pointer; transition:all .2s; }
+  .cap-btns button:hover{ background:var(--ink); color:#fff; border-color:var(--ink); }
+
+  /* 模块2B：语音转文字（三卡） */
+  .f2b{ background:#F8FAFC; }
+  .stt-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:26px; }
+  .stt-card{ background:#fff; border:1px solid var(--line); border-radius:24px; padding:36px 32px 0; overflow:hidden;
+    display:flex; flex-direction:column; transition:transform .3s, box-shadow .3s, border-color .3s; }
+  .stt-card:hover{ transform:translateY(-8px); box-shadow:0 24px 50px rgba(15,23,42,.1); border-color:#BFDBFE; }
+  .stt-ico{ width:52px; height:52px; border-radius:15px; display:flex; align-items:center; justify-content:center; margin-bottom:22px; }
+  .stt-ico svg{ width:26px; height:26px; stroke:#fff; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .stt-ico.i1{ background:linear-gradient(135deg,#3B82F6,#2563EB); }
+  .stt-ico.i2{ background:linear-gradient(135deg,#8B5CF6,#6D28D9); }
+  .stt-ico.i3{ background:linear-gradient(135deg,#06B6D4,#0891B2); }
+  .stt-card h3{ font-size:21px; margin-bottom:10px; }
+  .stt-card>p{ color:var(--sub); font-size:14px; line-height:1.75; margin-bottom:28px; }
+  .stt-card .mph{ margin:auto auto 0; }
+
+  /* 模块2C：智能会议纪要（左选右联动） */
+  .f2c{ background:#fff; }
+  .mins-grid{ display:grid; grid-template-columns:1fr 1.1fr; gap:70px; align-items:center; }
+  .mins-list{ display:flex; flex-direction:column; gap:10px; }
+  .mins-item{ display:flex; gap:16px; align-items:flex-start; padding:20px 24px; border-radius:18px;
+    border:1.5px solid transparent; cursor:pointer; transition:all .25s; }
+  .mins-item:hover{ background:#F8FAFC; }
+  .mins-item.on{ border-color:var(--accent); background:#fff; box-shadow:0 16px 40px rgba(15,23,42,.08); }
+  .mi-ico{ width:42px; height:42px; flex:none; border-radius:12px; background:linear-gradient(135deg,#DBEAFE,#CFFAFE);
+    display:flex; align-items:center; justify-content:center; }
+  .mi-ico svg{ width:21px; height:21px; stroke:var(--accent); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .mins-item h4{ font-size:17px; margin-bottom:6px; transition:color .2s; }
+  .mins-item.on h4{ color:var(--accent); }
+  .mins-item p{ color:var(--sub); font-size:13px; line-height:1.7; }
+  .mins-panel{ border-radius:28px; background:linear-gradient(160deg,#EFF6FF 0%,#F0FDFA 100%); border:1px solid #DBEAFE;
+    padding:44px 44px 0; overflow:hidden; display:flex; justify-content:center; }
+  .mins-phone{ width:320px; background:#0F172A; border-radius:32px 32px 0 0; padding:9px 9px 0; box-shadow:0 40px 80px rgba(15,23,42,.22); }
+  .mp-scr{ background:#fff; border-radius:24px 24px 0 0; padding:24px 22px 0; height:400px; overflow:hidden; }
+  .mp-tag{ display:inline-block; font-size:12px; font-weight:700; color:var(--accent); background:#EFF6FF;
+    border-radius:999px; padding:5px 14px; margin-bottom:14px; }
+  .mp-scr h5{ font-size:19px; margin-bottom:16px; }
+  .mp-scr ul{ list-style:none; display:flex; flex-direction:column; gap:12px; }
+  .mp-scr li{ background:#F8FAFC; border:1px solid var(--line); border-radius:12px; padding:13px 15px;
+    color:var(--sub); font-size:13px; line-height:1.6; }
+  .mp-scr li b{ color:var(--ink); }
+
+  /* 模块2D：VoxClip（四张深色卡） */
+  .f2d{ background:#F8FAFC; }
+  .vx-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:22px; }
+  .vx-card{ border-radius:24px; overflow:hidden; background:linear-gradient(180deg,#1E293B 0%,#0B0F1A 100%);
+    color:#fff; display:flex; flex-direction:column; transition:transform .3s, box-shadow .3s; }
+  .vx-card:hover{ transform:translateY(-8px); box-shadow:0 30px 60px rgba(15,23,42,.28); }
+  .vx-img{ height:190px; display:flex; align-items:center; justify-content:center; position:relative; }
+  .vx-img.t1{ background:radial-gradient(circle at 50% 70%, rgba(34,211,238,.28), transparent 70%); }
+  .vx-img.t2{ background:radial-gradient(circle at 50% 70%, rgba(59,130,246,.3), transparent 70%); }
+  .vx-img.t3{ background:radial-gradient(circle at 50% 70%, rgba(139,92,246,.3), transparent 70%); }
+  .vx-img.t4{ background:radial-gradient(circle at 50% 70%, rgba(148,163,184,.3), transparent 70%); }
+  .vx-img img{ max-height:160px; max-width:80%; object-fit:contain; filter:drop-shadow(0 18px 30px rgba(0,0,0,.45)); }
+  .vx-body{ padding:20px 22px 24px; display:flex; flex-direction:column; flex:1; }
+  .vx-badge{ width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:14px; }
+  .vx-badge svg{ width:17px; height:17px; stroke:#0B0F1A; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .vx-badge.b1{ background:#67E8F9; } .vx-badge.b2{ background:#93C5FD; }
+  .vx-badge.b3{ background:#C4B5FD; } .vx-badge.b4{ background:#CBD5E1; }
+  .vx-body h3{ font-size:17px; margin-bottom:8px; }
+  .vx-body>p{ color:#94A3B8; font-size:13px; line-height:1.7; margin-bottom:16px; }
+  .vx-more{ margin-top:auto; color:#7DD3FC; font-size:13px; cursor:pointer; transition:color .2s; }
+  .vx-more:hover{ color:#fff; }
+
+  /* 模块2E：连接更多硬件（自动滚动） */
+  .f2e{ background:#fff; overflow:hidden; }
+  .hw-viewport{ overflow:hidden; }
+  .hw-track{ display:flex; gap:26px; width:max-content; padding:6px 0 18px; animation:hwscroll 32s linear infinite; }
+  .hw-viewport:hover .hw-track{ animation-play-state:paused; }
+  @keyframes hwscroll{ to{ transform:translateX(-50%); } }
+  .hw-card{ width:420px; flex:none; background:#fff; border:1px solid var(--line); border-radius:24px; overflow:hidden;
+    transition:box-shadow .3s; }
+  .hw-card:hover{ box-shadow:0 24px 50px rgba(15,23,42,.1); }
+  .hw-img{ height:230px; display:flex; align-items:center; justify-content:center; position:relative;
+    background:linear-gradient(160deg,#E0F2FE 0%,#F0F9FF 100%); }
+  .hw-img.g2{ background:linear-gradient(160deg,#F5F3FF 0%,#EFF6FF 100%); }
+  .hw-img.g3{ background:linear-gradient(160deg,#ECFEFF 0%,#F0FDFA 100%); }
+  .hw-img img{ max-height:190px; max-width:70%; object-fit:contain; }
+  .hw-num{ position:absolute; top:16px; left:16px; width:38px; height:38px; border-radius:50%; background:#fff;
+    color:var(--ink); font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 16px rgba(15,23,42,.08); }
+  .hw-badge{ position:absolute; top:20px; right:16px; background:#fff; border-radius:999px; padding:7px 14px;
+    color:var(--accent); font-size:11px; font-weight:700; letter-spacing:.5px; box-shadow:0 6px 16px rgba(15,23,42,.08); }
+  .hw-body{ padding:24px 26px 26px; }
+  .hw-kicker{ color:#94A3B8; font-size:11px; font-weight:700; letter-spacing:2px; margin-bottom:10px; }
+  .hw-body h3{ font-size:22px; margin-bottom:10px; }
+  .hw-body>p{ color:var(--sub); font-size:14px; line-height:1.75; margin-bottom:22px; }
+  .hw-row{ display:flex; align-items:center; gap:16px; }
+  .hw-link{ font-size:14px; font-weight:600; border-bottom:2px solid var(--ink); padding-bottom:4px; cursor:pointer;
+    transition:color .2s, border-color .2s; }
+  .hw-link:hover{ color:var(--accent); border-color:var(--accent); }
+  .hw-buy{ background:var(--ink); color:#fff; font-size:14px; font-weight:600; border-radius:999px; padding:12px 26px;
+    cursor:pointer; transition:transform .2s, background .2s; }
+  .hw-buy:hover{ transform:translateY(-2px); background:var(--accent); }
+  .hw-hint{ text-align:center; color:#94A3B8; font-size:13px; margin-top:14px; }
+
+  /* 模块3：订阅云（深色） */
+  .sub-cloud{ background:radial-gradient(1000px 520px at 50% -100px, #1E293B 0%, #070B13 62%); color:#fff; }
+  .sub-cloud .sec-kicker{ color:#7DD3FC; }
+  .sub-cloud .sec-title{ color:#fff; }
+  .sub-cloud .sec-desc{ color:#94A3B8; }
+  .sub-cloud .sec-head{ margin-bottom:44px; }
+  /* 全局计费切换 */
+  .cycle-switch{ display:flex; gap:6px; width:max-content; margin:0 auto 60px; padding:6px;
+    background:rgba(255,255,255,.06); border:1px solid rgba(148,163,184,.22); border-radius:999px; }
+  .cyc{ border:none; background:transparent; color:#94A3B8; font-size:14px; font-weight:600; font-family:inherit;
+    padding:10px 26px; border-radius:999px; cursor:pointer; transition:all .2s; }
+  .cyc em{ font-style:normal; font-size:11px; font-weight:700; color:#FBBF24; margin-left:6px; }
+  .cyc:hover{ color:#E2E8F0; }
+  .cyc.on{ background:#F8FAFC; color:var(--ink); }
+  .cyc.on em{ color:var(--accent); }
+  .plan-cols{ display:grid; grid-template-columns:repeat(3,1fr); gap:26px; align-items:stretch; }
+  .pcol{ background:rgba(255,255,255,.04); border:1px solid rgba(148,163,184,.22); border-radius:24px;
+    padding:36px 30px; display:flex; flex-direction:column; position:relative;
+    transition:transform .3s, box-shadow .3s; }
+  .pcol:hover{ transform:translateY(-6px); }
+  .pcol.hot{ background:linear-gradient(180deg, rgba(37,99,235,.16), rgba(6,182,212,.07));
+    box-shadow:0 0 0 1.5px rgba(56,189,248,.55), 0 30px 60px rgba(2,6,23,.5); }
+  .hot-badge{ position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:var(--grad);
+    font-size:12px; font-weight:700; padding:6px 18px; border-radius:999px; letter-spacing:1px; }
+  .pcol-head{ display:flex; align-items:center; gap:12px; margin-bottom:26px; }
+  .p-name{ font-size:26px; font-weight:800; font-style:italic; letter-spacing:.5px; }
+  .p-tag{ font-size:12px; color:#93C5FD; border:1px solid rgba(147,197,253,.4); border-radius:999px; padding:4px 14px; }
+  .pcol.hot .p-tag{ color:#67E8F9; border-color:rgba(103,232,249,.5); }
+  .pcore{ display:flex; flex-direction:column; gap:15px; padding:20px; border-radius:16px;
+    background:rgba(255,255,255,.05); margin-bottom:26px; }
+  .pcore-item{ display:flex; align-items:center; gap:12px; }
+  .pc-ico{ width:34px; height:34px; flex:none; border-radius:10px; background:rgba(37,99,235,.22);
+    display:flex; align-items:center; justify-content:center; font-size:15px; }
+  .pcore-item b{ font-size:17px; display:block; }
+  .pcore-item b small{ font-size:12px; font-weight:500; color:#94A3B8; }
+  .pcore-item>span{ font-size:12px; color:#94A3B8; }
+  /* 价格区（随计费方式联动） */
+  .p-price{ margin-bottom:28px; min-height:118px; }
+  .pp-orig{ min-height:20px; color:#64748B; font-size:14px; text-decoration:line-through; margin-bottom:6px; }
+  .pp-now{ display:flex; align-items:baseline; gap:6px; }
+  .pp-now .cur{ font-size:22px; font-weight:700; }
+  .pp-now .num{ font-size:46px; font-weight:800; line-height:1; }
+  .pp-now .unit{ font-size:15px; color:#94A3B8; }
+  .pp-note{ color:#94A3B8; font-size:12px; margin-top:10px; }
+  .p-cta{ width:100%; padding:14px; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer;
+    font-family:inherit; border:none; background:var(--grad); color:#fff; box-shadow:0 10px 26px rgba(37,99,235,.35);
+    transition:transform .2s, box-shadow .2s; margin-top:auto; }
+  .p-cta:hover{ transform:translateY(-2px); }
+  .p-cta.ghost{ background:transparent; border:1.5px solid rgba(148,163,184,.5); box-shadow:none; color:#E2E8F0; }
+  .p-cta.ghost:hover{ border-color:#fff; }
+  /* 权益对比表 */
+  .compare{ margin-top:84px; }
+  .compare h3{ text-align:center; font-size:26px; font-weight:800; margin-bottom:34px; }
+  .cmp-wrap{ overflow-x:auto; border:1px solid rgba(148,163,184,.18); border-radius:20px; background:rgba(255,255,255,.03); }
+  .cmp{ width:100%; border-collapse:collapse; font-size:14px; min-width:640px; }
+  .cmp th,.cmp td{ padding:14px 16px; text-align:center; border-bottom:1px solid rgba(148,163,184,.12); }
+  .cmp tbody tr:last-child td{ border-bottom:none; }
+  .cmp th:first-child,.cmp td:first-child{ text-align:left; color:#CBD5E1; }
+  .cmp thead th{ font-size:16px; padding:20px 16px; }
+  .cmp thead th small{ font-size:12px; color:#94A3B8; font-weight:400; }
+  .cmp .hl{ background:rgba(34,211,238,.06); }
+  .cmp thead .hl{ color:#67E8F9; }
+  .cmp .yes{ color:#22D3EE; font-weight:700; }
+  .cmp .no{ color:#475569; }
+  .cmp tbody tr:hover td{ background:rgba(255,255,255,.04); }
+  .cmp tbody tr:hover td.hl{ background:rgba(34,211,238,.1); }
+
+  /* 页脚 */
+  footer{ background:#070B13; color:#94A3B8; padding:72px 0 36px; }
+  .f-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:48px; padding-bottom:48px; border-bottom:1px solid rgba(148,163,184,.15); }
+  .f-brand{ color:#fff; font-weight:700; font-size:18px; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+  .f-col h5{ color:#fff; font-size:15px; margin-bottom:18px; }
+  .f-col a{ display:block; font-size:14px; margin-bottom:12px; transition:color .2s; }
+  .f-col a:hover{ color:#fff; }
+  .f-bottom{ display:flex; justify-content:space-between; padding-top:28px; font-size:13px; color:#64748B; }
+
+  /* 登录弹窗 */
+  .login-mask{ position:fixed; inset:0; z-index:300; background:rgba(2,6,23,.62); backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:opacity .3s, visibility .3s; }
+  .login-mask.show{ opacity:1; visibility:visible; }
+  .login-card{ position:relative; width:400px; max-width:calc(100vw - 48px); background:#111827; border:1px solid rgba(148,163,184,.25);
+    border-radius:24px; padding:42px 40px 34px; box-shadow:0 40px 90px rgba(0,0,0,.5);
+    transform:translateY(24px) scale(.96); transition:transform .35s; }
+  .login-mask.show .login-card{ transform:none; }
+  .login-close{ position:absolute; top:16px; right:18px; width:34px; height:34px; border:none; border-radius:50%;
+    background:rgba(255,255,255,.08); color:#94A3B8; font-size:18px; cursor:pointer; transition:background .2s,color .2s; }
+  .login-close:hover{ background:rgba(255,255,255,.16); color:#fff; }
+  .login-card h3{ color:#fff; font-size:24px; font-weight:800; margin-bottom:8px; }
+  .login-sub{ color:#94A3B8; font-size:14px; margin-bottom:28px; }
+  .lg-field{ margin-bottom:16px; }
+  .lg-field input{ width:100%; background:rgba(255,255,255,.06); border:1px solid rgba(148,163,184,.3); border-radius:12px;
+    padding:14px 16px; color:#E2E8F0; font-size:15px; font-family:inherit; outline:none; transition:border-color .2s; }
+  .lg-field input:focus{ border-color:var(--accent2); }
+  .lg-code{ display:flex; gap:12px; }
+  .lg-code input{ flex:1; }
+  .lg-code button{ flex:none; padding:0 18px; border-radius:12px; border:1px solid rgba(103,232,249,.5); background:transparent;
+    color:#67E8F9; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .2s; white-space:nowrap; }
+  .lg-code button:hover:not(:disabled){ background:rgba(34,211,238,.12); }
+  .lg-code button:disabled{ opacity:.45; cursor:not-allowed; }
+  .lg-err{ min-height:20px; color:#F87171; font-size:13px; margin-bottom:12px; }
+  .lg-submit{ width:100%; padding:15px; border:none; border-radius:12px; background:var(--grad); color:#fff;
+    font-size:16px; font-weight:700; font-family:inherit; cursor:pointer; box-shadow:0 10px 26px rgba(37,99,235,.35);
+    transition:transform .2s; }
+  .lg-submit:hover{ transform:translateY(-2px); }
+  .lg-submit.ok{ background:linear-gradient(135deg,#059669,#10B981); pointer-events:none; }
+  .lg-agree{ margin-top:18px; text-align:center; color:#64748B; font-size:12px; }
+
+  /* Toast 提示 */
+  .toast{ position:fixed; bottom:36px; left:50%; transform:translate(-50%, 80px); background:var(--ink); color:#fff;
+    padding:13px 28px; border-radius:999px; font-size:14px; z-index:400; opacity:0; transition:all .4s; pointer-events:none;
+    box-shadow:0 16px 40px rgba(0,0,0,.3); }
+  .toast.show{ opacity:1; transform:translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+<!-- 顶部栏：左 Logo / 中 导航 / 右 中英文切换 + 登录 + 下载 -->
+<header class="topbar" id="topbar">
+  <a class="logo" href="#top"><img class="logo-img" src="./logo-white.png" alt="PISEN 品胜"><span class="logo-text">AI Lab</span></a>
+  <nav class="main-nav">
+    <a href="#top" class="on">APP下载</a>
+    <a href="./商务协作.html" target="_blank" rel="noopener">商务协作</a>
+    <a href="./加入我们.html" target="_blank" rel="noopener">加入我们</a>
+    <a href="./服务与支持.html" target="_blank" rel="noopener">服务与支持</a>
+  </nav>
+  <div class="top-actions">
+    <div class="lang" id="langBtn" title="语言切换（演示）"><b>中</b> / EN</div>
+    <a class="btn-ghost" id="loginBtn">登录</a>
+    <a class="btn-solid" id="topDlBtn">下载 App</a>
+  </div>
+</header>
+
+<!-- 模块1：首屏（深色 · 居中） -->
+<section class="hero" id="top">
+  <div class="float-card fc-left"><img src="./idock-app-icon.png" alt="PISEN AI"><div><b>PISEN AI</b><span>智能中枢已就绪</span></div></div>
+  <div class="float-card fc-right"><span class="fc-dot"></span><div><b>3 台设备在线</b><span>VoxClip · 小Buddy · Station</span></div></div>
+  <div class="wrap">
+    <div class="tag">PISEN AI APP</div>
+    <h1>一个 App<br><span>连接你的 AI 世界</span></h1>
+    <p>PISEN AI App 是所有 AI 硬件的智能中枢，提供设备管理、AI 服务与云端数据同步能力。</p>
+    <div class="hero-cta">
+      <a class="hc-primary" data-dl="App">下载 App</a>
+      <a class="hc-ghost" data-dl="网页端">使用网页端</a>
+    </div>
+    <div class="hero-dl">
+      <a class="dl-btn" data-dl="App Store"><div class="ic"></div><div><small>Download on the</small><b>App Store</b></div></a>
+      <a class="dl-btn" data-dl="Android"><div class="ic"></div><div><small>Android 版</small><b>应用下载</b></div></a>
+      <div class="qr" id="qrCode" title="扫码下载（悬停放大）"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 模块2A：最新 AI 能力速览（横向滚动大卡） -->
+<section class="f2a" id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">AI CAPABILITIES</div>
+      <div class="sec-title">最新 AI 能力速览</div>
+      <div class="sec-desc">从录音、转写到 Agent 协作，把常用 AI 能力放进同一个入口。</div>
+    </div>
+  </div>
+  <div class="cap-scroll" id="capScroll">
+    <article class="cap-card">
+      <div class="cap-kicker">AI 录音</div>
+      <h3>实时转写，<br>边说边成稿。</h3>
+      <p>自动区分不同说话人，录音、逐字稿与 AI 纪要同步生成。</p>
+      <div class="mph"><div class="mscr">
+        <div class="ms-status"></div><div class="ms-head"></div><div class="ms-wave"></div>
+        <div class="ms-block hl"></div><div class="ms-line"></div><div class="ms-line s"></div>
+        <div class="ms-block"></div><div class="ms-line"></div><div class="ms-line s"></div>
+      </div></div>
+    </article>
+    <article class="cap-card alt">
+      <div class="cap-kicker">多模型 AI 助手</div>
+      <h3>一个入口，<br>连接多种 Agent。</h3>
+      <p>根据任务快速切换 AI 助手，让每一种模型发挥更合适的能力。</p>
+      <div class="mph"><div class="mscr v2">
+        <div class="ms-status"></div><div class="ms-head"></div>
+        <div class="ms-block hl"></div><div class="ms-block"></div><div class="ms-block hl"></div>
+        <div class="ms-line"></div><div class="ms-line s"></div>
+      </div></div>
+    </article>
+    <article class="cap-card">
+      <div class="cap-kicker">AI 纪要</div>
+      <h3>一小时会议，<br>一分钟掌握。</h3>
+      <p>自动提炼结论、待办与责任人，让会议结论真正落到行动。</p>
+      <div class="mph"><div class="mscr v3">
+        <div class="ms-status"></div><div class="ms-head"></div>
+        <div class="ms-block hl"></div><div class="ms-line"></div><div class="ms-line s"></div>
+        <div class="ms-block"></div><div class="ms-line"></div><div class="ms-line s"></div>
+      </div></div>
+    </article>
+  </div>
+  <div class="wrap cap-bar">
+    <span class="cap-hint">← 左右滑动查看更多</span>
+    <div class="cap-btns"><button id="capPrev" aria-label="上一个">←</button><button id="capNext" aria-label="下一个">→</button></div>
+  </div>
+</section>
+
+<!-- 模块2B：语音转文字（三卡） -->
+<section class="f2b">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">SPEECH TO TEXT</div>
+      <div class="sec-title">语音转文字，让每一次讨论都可检索。</div>
+      <div class="sec-desc">记录得更完整，定位得更快，也能跨语言理解内容。</div>
+    </div>
+    <div class="stt-grid">
+      <div class="stt-card reveal">
+        <div class="stt-ico i1"><svg viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 10v4"/></svg></div>
+        <h3>逐字稿精准快速</h3>
+        <p>会议、访谈、课程与灵感随时录，自动识别说话人并生成逐字稿。</p>
+        <div class="mph"><div class="mscr">
+          <div class="ms-status"></div><div class="ms-head"></div><div class="ms-wave"></div>
+          <div class="ms-block hl"></div><div class="ms-line"></div><div class="ms-line s"></div><div class="ms-line"></div>
+        </div></div>
+      </div>
+      <div class="stt-card reveal">
+        <div class="stt-ico i2"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+        <h3>搜索快速定位</h3>
+        <p>按关键词查找对话与记录，一秒回到真正需要关注的信息。</p>
+        <div class="mph"><div class="mscr v2">
+          <div class="ms-status"></div><div class="ms-head"></div>
+          <div class="ms-block hl"></div><div class="ms-line"></div><div class="ms-line s"></div>
+          <div class="ms-block"></div><div class="ms-line"></div>
+        </div></div>
+      </div>
+      <div class="stt-card reveal">
+        <div class="stt-ico i3"><svg viewBox="0 0 24 24"><path d="M4 7h9M8.5 4v3c0 3.5-2 6.5-4.5 8M6 11c1.5 2.5 4 4.5 7 5.5"/><path d="M13 21l4-9 4 9M14.5 18h5"/></svg></div>
+        <h3>智能翻译，多语理解</h3>
+        <p>用自然语言与 AI 沟通，跨语言理解、问答和创作都在同一处完成。</p>
+        <div class="mph"><div class="mscr v3">
+          <div class="ms-status"></div><div class="ms-head"></div>
+          <div class="ms-block hl"></div><div class="ms-line"></div><div class="ms-line s"></div>
+          <div class="ms-block"></div><div class="ms-line"></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 模块2C：智能会议纪要（左选右联动） -->
+<section class="f2c">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">MEETING MINUTES</div>
+      <div class="sec-title">智能会议纪要，让 1 小时会议，1 分钟掌握。</div>
+      <div class="sec-desc">从信息记录到行动跟进，iDOCK 自动整理每一次讨论的结果。</div>
+    </div>
+    <div class="mins-grid">
+      <div class="mins-list reveal">
+        <div class="mins-item on" data-m="0">
+          <div class="mi-ico"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4z"/><path d="M18 15l.9 2.1L21 18l-2.1.9L18 21l-.9-2.1L15 18l2.1-.9z"/></svg></div>
+          <div><h4>AI 总结会议纪要</h4><p>自动提炼结论、背景与关键讨论</p></div>
+        </div>
+        <div class="mins-item" data-m="1">
+          <div class="mi-ico"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg></div>
+          <div><h4>结构化呈现章节重点</h4><p>按议题组织内容，回顾更高效</p></div>
+        </div>
+        <div class="mins-item" data-m="2">
+          <div class="mi-ico"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg></div>
+          <div><h4>智能识别待办任务</h4><p>自动找出责任人、任务与时间，让会议结论真正落到行动。</p></div>
+        </div>
+      </div>
+      <div class="mins-panel reveal">
+        <div class="mins-phone"><div class="mp-scr">
+          <div class="mp-tag" id="minsTag">AI 纪要</div>
+          <h5 id="minsTitle">AI 总结会议纪要</h5>
+          <ul id="minsList"></ul>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 模块2D：VoxClip（四张深色卡） -->
+<section class="f2d">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">VOXCLIP</div>
+      <div class="sec-title">把每一句话，变成可以继续的行动。</div>
+      <div class="sec-desc">从实时翻译到录音总结，VoxClip 让听见、理解与行动在同一副耳机里完成。</div>
+    </div>
+    <div class="vx-grid">
+      <div class="vx-card reveal">
+        <div class="vx-img t1"><img src="./voxclip-cut.png" alt="VoxClip"></div>
+        <div class="vx-body">
+          <div class="vx-badge b1"><svg viewBox="0 0 24 24"><path d="M4 7h9M8.5 4v3c0 3.5-2 6.5-4.5 8M6 11c1.5 2.5 4 4.5 7 5.5"/><path d="M13 21l4-9 4 9M14.5 18h5"/></svg></div>
+          <h3>实时翻译</h3>
+          <p>20+ 种语言实时互译，双语字幕在 App 内同步显示，跨语言交流更自然。</p>
+          <a class="vx-more" data-demo="实时翻译 · 了解更多">了解更多 ›</a>
+        </div>
+      </div>
+      <div class="vx-card reveal">
+        <div class="vx-img t2"><img src="./voxclip-cut.png" alt="VoxClip"></div>
+        <div class="vx-body">
+          <div class="vx-badge b2"><svg viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 10v4"/></svg></div>
+          <h3>录音转写与总结</h3>
+          <p>充电仓 4 麦阵列负责高质量拾音，录音可自动转写、提炼会议摘要与待办。</p>
+          <a class="vx-more" data-demo="录音转写与总结 · 了解更多">了解更多 ›</a>
+        </div>
+      </div>
+      <div class="vx-card reveal">
+        <div class="vx-img t3"><img src="./voxclip-cut.png" alt="VoxClip"></div>
+        <div class="vx-body">
+          <div class="vx-badge b3"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4z"/></svg></div>
+          <h3>AI 语音对话</h3>
+          <p>说出“Hey iDock”即可唤醒，询问、翻译或开始录音，让 AI 成为随叫随到的随身入口。</p>
+          <a class="vx-more" data-demo="AI 语音对话 · 了解更多">了解更多 ›</a>
+        </div>
+      </div>
+      <div class="vx-card reveal">
+        <div class="vx-img t4"><img src="./voxclip-cut.png" alt="VoxClip"></div>
+        <div class="vx-body">
+          <div class="vx-badge b4"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a12 12 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></div>
+          <h3>通话录音与翻译</h3>
+          <p>通话录音存入充电仓，支持转写与摘要；通话翻译仅实时处理，不留存音频。</p>
+          <a class="vx-more" data-demo="通话录音与翻译 · 了解更多">了解更多 ›</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 模块2E：连接更多 AI 硬件（自动滚动） -->
+<section class="f2e">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">ECOSYSTEM</div>
+      <div class="sec-title">让 iDOCK 软件，连接更多 AI 硬件。</div>
+      <div class="sec-desc">每一款硬件都是新的感知入口，iDOCK 把设备、记录与 Agent 能力汇到同一个 App。</div>
+    </div>
+  </div>
+  <div class="hw-viewport">
+    <div class="hw-track" id="hwTrack">
+      <article class="hw-card">
+        <div class="hw-img"><span class="hw-num">01</span><span class="hw-badge">⇄ iDOCK CONNECTED</span><img src="./idock-cut.png" alt="iDOCK Desktop AI Station"></div>
+        <div class="hw-body">
+          <div class="hw-kicker">DESKTOP AI STATION</div>
+          <h3>iDOCK Desktop AI Station</h3>
+          <p>语音对话、AI 跟拍、手势控制与全场景充电放在同一个桌面入口。</p>
+          <div class="hw-row"><a class="hw-link" data-demo="连接 iDOCK">连接 iDOCK →</a><a class="hw-buy" data-demo="iDOCK Desktop AI Station · 立即购买">立即购买 →</a></div>
+        </div>
+      </article>
+      <article class="hw-card">
+        <div class="hw-img g2"><span class="hw-num">02</span><span class="hw-badge">⇄ iDOCK CONNECTED</span><img src="./buddy-cut.png" alt="小Buddy AI 录音充电宝"></div>
+        <div class="hw-body">
+          <div class="hw-kicker">24H AI RECORDING</div>
+          <h3>小Buddy AI 录音充电宝</h3>
+          <p>充电、智录与会议记录三合一，让整天的灵感和讨论都能被保留。</p>
+          <div class="hw-row"><a class="hw-link" data-demo="连接 iDOCK">连接 iDOCK →</a><a class="hw-buy" data-demo="小Buddy AI 录音充电宝 · 立即购买">立即购买 →</a></div>
+        </div>
+      </article>
+      <article class="hw-card">
+        <div class="hw-img g3"><span class="hw-num">03</span><span class="hw-badge">⇄ iDOCK CONNECTED</span><img src="./voxclip-cut.png" alt="VoxClip AI 耳夹耳机"></div>
+        <div class="hw-body">
+          <div class="hw-kicker">AI EARBUDS</div>
+          <h3>VoxClip AI 耳夹耳机</h3>
+          <p>实时翻译、录音转写与通话助手，把 AI 能力戴在耳边。</p>
+          <div class="hw-row"><a class="hw-link" data-demo="连接 iDOCK">连接 iDOCK →</a><a class="hw-buy" data-demo="VoxClip AI 耳夹耳机 · 立即购买">立即购买 →</a></div>
+        </div>
+      </article>
+      <!-- 复制一组用于无缝循环 -->
+      <article class="hw-card" aria-hidden="true">
+        <div class="hw-img"><span class="hw-num">01</span><span class="hw-badge">⇄ iDOCK CONNECTED</span><img src="./idock-cut.png" alt=""></div>
+        <div class="hw-body">
+          <div class="hw-kicker">DESKTOP AI STATION</div>
+          <h3>iDOCK Desktop AI Station</h3>
+          <p>语音对话、AI 跟拍、手势控制与全场景充电放在同一个桌面入口。</p>
+          <div class="hw-row"><a class="hw-link" data-demo="连接 iDOCK">连接 iDOCK →</a><a class="hw-buy" data-demo="iDOCK Desktop AI Station · 立即购买">立即购买 →</a></div>
+        </div>
+      </article>
+      <article class="hw-card" aria-hidden="true">
+        <div class="hw-img g2"><span class="hw-num">02</span><span class="hw-badge">⇄ iDOCK CONNECTED</span><img src="./buddy-cut.png" alt=""></div>
+        <div class="hw-body">
+          <div class="hw-kicker">24H AI RECORDING</div>
+          <h3>小Buddy AI 录音充电宝</h3>
+          <p>充电、智录与会议记录三合一，让整天的灵感和讨论都能被保留。</p>
+          <div class="hw-row"><a class="hw-link" data-demo="连接 iDOCK">连接 iDOCK →</a><a class="hw-buy" data-demo="小Buddy AI 录音充电宝 · 立即购买">立即购买 →</a></div>
+        </div>
+      </article>
+      <article class="hw-card" aria-hidden="true">
+        <div class="hw-img g3"><span class="hw-num">03</span><span class="hw-badge">⇄ iDOCK CONNECTED</span><img src="./voxclip-cut.png" alt=""></div>
+        <div class="hw-body">
+          <div class="hw-kicker">AI EARBUDS</div>
+          <h3>VoxClip AI 耳夹耳机</h3>
+          <p>实时翻译、录音转写与通话助手，把 AI 能力戴在耳边。</p>
+          <div class="hw-row"><a class="hw-link" data-demo="连接 iDOCK">连接 iDOCK →</a><a class="hw-buy" data-demo="VoxClip AI 耳夹耳机 · 立即购买">立即购买 →</a></div>
+        </div>
+      </article>
+    </div>
+  </div>
+  <div class="hw-hint">产品自动向左滚动 · 悬停可暂停 →</div>
+</section>
+
+<!-- 模块3：订阅云（深色 · 全局计费切换） -->
+<section class="sub-cloud">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">CLOUD PLANS</div>
+      <div class="sec-title">订阅云服务</div>
+      <div class="sec-desc">三档会员方案，满足不同深度的 AI 云服务需求（价格为占位，以实际上线为准）</div>
+    </div>
+
+    <!-- 全局计费方式：月付 / 连续包月 / 年付 -->
+    <div class="cycle-switch reveal" id="cycleSwitch">
+      <button class="cyc" data-cycle="month">月付</button>
+      <button class="cyc on" data-cycle="cmonth">连续包月<em>8折</em></button>
+      <button class="cyc" data-cycle="year">年付<em>7折</em></button>
+    </div>
+
+    <div class="plan-cols">
+      <!-- Luna 免费 -->
+      <div class="pcol reveal" data-plan-name="Luna">
+        <div class="pcol-head"><span class="p-name">Luna</span><span class="p-tag">免费</span></div>
+        <div class="pcore">
+          <div class="pcore-item"><span class="pc-ico">⏱</span><div><b>300<small> 分钟/月</small></b><span>实时转写时长</span></div></div>
+          <div class="pcore-item"><span class="pc-ico">🌐</span><div><b>300<small> 分钟/月</small></b><span>翻译时长</span></div></div>
+          <div class="pcore-item"><span class="pc-ico">🪙</span><div><b>500</b><span>荷粒积分</span></div></div>
+        </div>
+        <div class="p-price"></div>
+        <button class="p-cta ghost" data-plan="Luna">免费开始</button>
+      </div>
+
+      <!-- Terra 标准 -->
+      <div class="pcol reveal" data-plan-name="Terra">
+        <div class="pcol-head"><span class="p-name">Terra</span><span class="p-tag">标准</span></div>
+        <div class="pcore">
+          <div class="pcore-item"><span class="pc-ico">⏱</span><div><b>6000<small> 分钟/月</small></b><span>实时转写时长</span></div></div>
+          <div class="pcore-item"><span class="pc-ico">🌐</span><div><b>6000<small> 分钟/月</small></b><span>翻译时长</span></div></div>
+          <div class="pcore-item"><span class="pc-ico">🪙</span><div><b>3,000</b><span>荷粒积分</span></div></div>
+        </div>
+        <div class="p-price"></div>
+        <button class="p-cta ghost" data-plan="Terra">升级为 Terra</button>
+      </div>
+
+      <!-- Sol 专业（推荐） -->
+      <div class="pcol hot reveal" data-plan-name="Sol">
+        <div class="hot-badge">推荐</div>
+        <div class="pcol-head"><span class="p-name">Sol</span><span class="p-tag">专业</span></div>
+        <div class="pcore">
+          <div class="pcore-item"><span class="pc-ico">⏱</span><div><b>6000<small> 分钟/月</small></b><span>实时转写时长</span></div></div>
+          <div class="pcore-item"><span class="pc-ico">🌐</span><div><b>6000<small> 分钟/月</small></b><span>翻译时长</span></div></div>
+          <div class="pcore-item"><span class="pc-ico">🪙</span><div><b>9,900</b><span>荷粒积分</span></div></div>
+        </div>
+        <div class="p-price"></div>
+        <button class="p-cta" data-plan="Sol">升级为 Sol</button>
+      </div>
+    </div>
+
+    <!-- 权益对比 -->
+    <div class="compare reveal">
+      <h3>权益对比</h3>
+      <div class="cmp-wrap">
+        <table class="cmp">
+          <thead>
+            <tr><th>权益</th><th>Luna <small>免费</small></th><th>Terra <small>标准</small></th><th class="hl">Sol <small>专业</small></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>实时转写时长</td><td>300 分钟/月</td><td>6000 分钟/月</td><td class="hl">6000 分钟/月</td></tr>
+            <tr><td>翻译时长</td><td>300 分钟/月</td><td>6000 分钟/月</td><td class="hl">6000 分钟/月</td></tr>
+            <tr><td>荷粒积分</td><td>500</td><td>3,000</td><td class="hl">9,900</td></tr>
+            <tr><td>说话人识别</td><td class="yes">✓</td><td class="yes">✓</td><td class="hl yes">✓</td></tr>
+            <tr><td>声纹录入</td><td class="yes">✓</td><td class="yes">✓</td><td class="hl yes">✓</td></tr>
+            <tr><td>热词库</td><td class="yes">✓</td><td class="yes">✓</td><td class="hl yes">✓</td></tr>
+            <tr><td>翻译语种</td><td>60 种</td><td>60 种</td><td class="hl">60 种</td></tr>
+            <tr><td>支持语种</td><td>29 种</td><td>29 种</td><td class="hl">29 种</td></tr>
+            <tr><td>AI 纪要模版</td><td>100+</td><td>100+</td><td class="hl">100+</td></tr>
+            <tr><td>自定义模版</td><td class="no">—</td><td class="no">—</td><td class="hl yes">✓</td></tr>
+            <tr><td>画图</td><td class="yes">✓</td><td class="yes">✓</td><td class="hl yes">✓</td></tr>
+            <tr><td>Agent 接入个数</td><td>1 个</td><td>3 个</td><td class="hl">10 个</td></tr>
+            <tr><td>PPT</td><td class="yes">✓</td><td class="yes">✓</td><td class="hl yes">✓</td></tr>
+            <tr><td>天气查询</td><td class="yes">✓</td><td class="yes">✓</td><td class="hl yes">✓</td></tr>
+            <tr><td>新闻查询</td><td class="yes">✓</td><td class="yes">✓</td><td class="hl yes">✓</td></tr>
+            <tr><td>设备绑定</td><td>2 台</td><td>3 台</td><td class="hl">5 台</td></tr>
+            <tr><td>云端存储</td><td>1GB</td><td>10GB</td><td class="hl">50GB</td></tr>
+            <tr><td>个人词库</td><td class="yes">✓</td><td class="yes">✓</td><td class="hl yes">✓</td></tr>
+            <tr><td>客服支持</td><td>专属</td><td>专属</td><td class="hl">专属</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 页脚（含服务中心） -->
+<footer id="service">
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <a class="f-brand" href="#top"><img class="f-logo-img" src="./logo-white.png" alt="PISEN 品胜"><span class="f-logo-text">AI Lab</span></a>
+        <p style="font-size:14px;line-height:1.8;max-width:280px;">品牌简介占位：专注 AI 硬件与智能软件体验的创新团队。</p>
+      </div>
+      <div class="f-col"><h5>服务中心</h5><a href="#">申请售后</a><a href="#">服务政策</a><a href="#">保修查询</a><a href="#">服务网点</a></div>
+      <div class="f-col"><h5>关于我们</h5><a href="#">公司介绍</a><a href="#">新闻动态</a><a href="#">加入我们</a></div>
+      <div class="f-col"><h5>联系方式</h5><a href="#">商务合作：biz@example.com</a><a href="#">客服热线：400-000-0000</a><a href="#">社交媒体</a></div>
+    </div>
+    <div class="f-bottom"><span>© 2026 PISEN AI Lab. 版权所有</span><span>备案号占位：粤ICP备00000000号</span></div>
+  </div>
+</footer>
+
+<!-- 登录弹窗 -->
+<div class="login-mask" id="loginMask">
+  <div class="login-card">
+    <button class="login-close" id="loginClose" aria-label="关闭">×</button>
+    <h3>欢迎登录</h3>
+    <p class="login-sub">使用手机号验证码登录 PISEN AI Lab</p>
+    <div class="lg-field"><input id="phoneInput" type="tel" maxlength="11" placeholder="请输入手机号"></div>
+    <div class="lg-field lg-code">
+      <input id="codeInput" type="text" maxlength="6" placeholder="请输入验证码">
+      <button id="sendCodeBtn" type="button">获取验证码</button>
+    </div>
+    <div class="lg-err" id="loginErr"></div>
+    <button class="lg-submit" id="doLoginBtn" type="button">登 录</button>
+    <p class="lg-agree">登录即代表同意《用户协议》与《隐私政策》</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  /* 顶部栏滚动效果 */
+  var topbar = document.getElementById('topbar');
+  window.addEventListener('scroll', function(){
+    topbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  /* Toast */
+  var toast = document.getElementById('toast'), toastTimer;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+  }
+
+  /* 滚动渐入 */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  /* 下载按钮（演示） */
+  document.querySelectorAll('[data-dl]').forEach(function(btn){
+    btn.addEventListener('click', function(){ showToast(btn.getAttribute('data-dl') + ' 下载链接待接入（演示）'); });
+  });
+  document.getElementById('topDlBtn').addEventListener('click', function(){ showToast('App 下载链接待接入（演示）'); });
+  document.getElementById('qrCode').addEventListener('click', function(){ showToast('扫码下载为占位演示'); });
+
+  /* 了解更多 / 硬件操作（演示） */
+  document.querySelectorAll('[data-demo]').forEach(function(el){
+    el.addEventListener('click', function(){ showToast('「' + el.getAttribute('data-demo') + '」为占位演示'); });
+  });
+
+  /* 模块2A：能力速览左右切换 */
+  var capScroll = document.getElementById('capScroll');
+  document.getElementById('capPrev').addEventListener('click', function(){ capScroll.scrollBy({ left:-586, behavior:'smooth' }); });
+  document.getElementById('capNext').addEventListener('click', function(){ capScroll.scrollBy({ left:586, behavior:'smooth' }); });
+
+  /* 模块2C：会议纪要联动 */
+  var MINS = [
+    { tag:'AI 纪要', title:'AI 总结会议纪要', items:[
+      '<b>结论：</b>产品需求评审通过，进入开发排期。',
+      '<b>背景：</b>结合上一季度用户反馈与数据表现。',
+      '<b>关键讨论：</b>关于跨端同步方案的两种取舍。' ] },
+    { tag:'章节重点', title:'结构化呈现章节重点', items:[
+      '<b>章节 1 · 目标对齐：</b>明确本季度 OKR 与里程碑。',
+      '<b>章节 2 · 方案评审：</b>逐条过需求与边界条件。',
+      '<b>章节 3 · 风险与依赖：</b>识别阻塞项并指定跟进人。' ] },
+    { tag:'待办识别', title:'智能识别待办任务', items:[
+      '<b>王芳：</b>本周五前输出交互稿（高优）。',
+      '<b>李雷：</b>下周三前完成接口联调。',
+      '<b>全体：</b>下次例会同步进度，会前更新文档。' ] }
+  ];
+  var minsTag = document.getElementById('minsTag');
+  var minsTitle = document.getElementById('minsTitle');
+  var minsList = document.getElementById('minsList');
+  function renderMins(i){
+    var d = MINS[i];
+    minsTag.textContent = d.tag;
+    minsTitle.textContent = d.title;
+    minsList.innerHTML = d.items.map(function(t){ return '<li>' + t + '</li>'; }).join('');
+  }
+  renderMins(0);
+  document.querySelectorAll('.mins-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      document.querySelectorAll('.mins-item').forEach(function(x){ x.classList.remove('on'); });
+      item.classList.add('on');
+      renderMins(parseInt(item.getAttribute('data-m'), 10));
+    });
+  });
+
+  /* 模块3：全局计费方式切换 */
+  var PRICES = {
+    Luna: {
+      month:  { orig:'', now:'0', unit:'元', note:'免费使用' },
+      cmonth: { orig:'', now:'0', unit:'元', note:'免费使用' },
+      year:   { orig:'', now:'0', unit:'元', note:'免费使用' }
+    },
+    Terra: {
+      month:  { orig:'', now:'329', unit:'元/月', note:'单月购买，原价' },
+      cmonth: { orig:'¥329/月', now:'258', unit:'元/月', note:'连续包月，随时可取消' },
+      year:   { orig:'¥3,948/年', now:'1,988', unit:'元/年', note:'折 ¥166/月，一次性支付' }
+    },
+    Sol: {
+      month:  { orig:'', now:'689', unit:'元/月', note:'单月购买，原价' },
+      cmonth: { orig:'¥689/月', now:'551', unit:'元/月', note:'连续包月，随时可取消（首月特惠）' },
+      year:   { orig:'¥8,268/年', now:'4,134', unit:'元/年', note:'折 ¥345/月，一次性支付（首年特惠）' }
+    }
+  };
+  var CYCLE_LABEL = { month:'月付', cmonth:'连续包月', year:'年付' };
+  var currentCycle = 'cmonth';
+  function renderPrices(){
+    document.querySelectorAll('.pcol[data-plan-name]').forEach(function(col){
+      var d = PRICES[col.getAttribute('data-plan-name')][currentCycle];
+      col.querySelector('.p-price').innerHTML =
+        '<div class="pp-orig">' + (d.orig || '') + '</div>' +
+        '<div class="pp-now"><span class="cur">¥</span><span class="num">' + d.now + '</span><span class="unit">' + d.unit + '</span></div>' +
+        '<div class="pp-note">' + d.note + '</div>';
+    });
+  }
+  renderPrices();
+  document.querySelectorAll('#cycleSwitch .cyc').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('#cycleSwitch .cyc').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      currentCycle = btn.getAttribute('data-cycle');
+      renderPrices();
+    });
+  });
+  document.querySelectorAll('[data-plan]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var plan = btn.getAttribute('data-plan');
+      var msg = plan === 'Luna' ? '已选择「Luna · 免费版」' : '已选择「' + plan + ' · ' + CYCLE_LABEL[currentCycle] + '」';
+      showToast(msg + '，支付流程待接入（演示）');
+    });
+  });
+
+  /* 语言 / 登录（演示） */
+  document.getElementById('langBtn').addEventListener('click', function(){ showToast('多语言切换为占位演示'); });
+  /* ===== 登录弹窗 ===== */
+  var loginMask = document.getElementById('loginMask');
+  var phoneInput = document.getElementById('phoneInput');
+  var codeInput = document.getElementById('codeInput');
+  var sendCodeBtn = document.getElementById('sendCodeBtn');
+  var doLoginBtn = document.getElementById('doLoginBtn');
+  var loginErr = document.getElementById('loginErr');
+  var codeTimer = null;
+
+  function setLoggedIn(){
+    var lb = document.getElementById('loginBtn');
+    lb.textContent = '已登录';
+    lb.classList.add('logged-in');
+  }
+  function setLoggedOut(){
+    var lb = document.getElementById('loginBtn');
+    lb.textContent = '登录';
+    lb.classList.remove('logged-in');
+  }
+  try{ if (localStorage.getItem('pisen_login')) setLoggedIn(); }catch(e){}
+
+  function openLogin(){ loginErr.textContent = ''; loginMask.classList.add('show'); setTimeout(function(){ phoneInput.focus(); }, 300); }
+  function closeLogin(){ loginMask.classList.remove('show'); }
+  function validPhone(){ return /^1\d{10}$/.test(phoneInput.value.trim()); }
+
+  var loginBtnEl = document.getElementById('loginBtn');
+  loginBtnEl.addEventListener('click', function(){
+    if (this.classList.contains('logged-in')){
+      try{ localStorage.removeItem('pisen_login'); }catch(e){}
+      setLoggedOut();
+      showToast('已退出登录');
+    } else openLogin();
+  });
+  loginBtnEl.addEventListener('mouseenter', function(){ if (this.classList.contains('logged-in')) this.textContent = '退出登录'; });
+  loginBtnEl.addEventListener('mouseleave', function(){ if (this.classList.contains('logged-in')) this.textContent = '已登录'; });
+  document.getElementById('loginClose').addEventListener('click', closeLogin);
+  loginMask.addEventListener('click', function(e){ if (e.target === loginMask) closeLogin(); });
+
+  sendCodeBtn.addEventListener('click', function(){
+    if (!validPhone()){ loginErr.textContent = '请输入正确的 11 位手机号'; phoneInput.focus(); return; }
+    loginErr.textContent = '';
+    showToast('验证码已发送（演示环境，任意验证码可登录）');
+    var s = 60;
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.textContent = s + 's 后重发';
+    codeTimer = setInterval(function(){
+      s--;
+      if (s <= 0){ clearInterval(codeTimer); sendCodeBtn.disabled = false; sendCodeBtn.textContent = '获取验证码'; }
+      else sendCodeBtn.textContent = s + 's 后重发';
+    }, 1000);
+  });
+
+  doLoginBtn.addEventListener('click', function(){
+    if (!validPhone()){ loginErr.textContent = '请输入正确的 11 位手机号'; return; }
+    if (!/^\d{4,6}$/.test(codeInput.value.trim())){ loginErr.textContent = '请输入 4–6 位数字验证码'; return; }
+    loginErr.textContent = '';
+    doLoginBtn.textContent = '✓ 登录成功';
+    doLoginBtn.classList.add('ok');
+    setTimeout(function(){
+      closeLogin();
+      try{ localStorage.setItem('pisen_login', phoneInput.value.trim()); }catch(e){}
+      setLoggedIn();
+      showToast('登录成功，欢迎回来（演示）');
+      doLoginBtn.textContent = '登 录';
+      doLoginBtn.classList.remove('ok');
+    }, 900);
+  });
+})();
+</script>
+</body>
+</html>

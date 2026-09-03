@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PISEN AI Lab · 硬件官网</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --dark:#0B0F1A; --ink:#0F172A; --sub:#475569; --line:#E2E8F0;
+    --accent:#2563EB; --accent2:#06B6D4; --grad:linear-gradient(135deg,#2563EB,#06B6D4);
+  }
+  html{ scroll-behavior:smooth; }
+  body{ font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif; color:var(--ink); background:#fff; }
+  a{ text-decoration:none; color:inherit; }
+  .wrap{ max-width:1200px; margin:0 auto; padding:0 24px; }
+
+  /* ===== 顶部栏（滚动后变为实色） ===== */
+  .topbar{ position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between; padding:22px 48px;
+    transition:background .35s, box-shadow .35s, padding .35s; }
+  .topbar.scrolled{ background:rgba(7,11,19,.85); backdrop-filter:blur(14px); padding:14px 48px;
+    box-shadow:0 4px 24px rgba(0,0,0,.35); }
+  .logo{ display:flex; align-items:center; gap:14px; }
+  .logo-img{ height:32px; display:block; }
+  .logo-text{ color:#fff; font-weight:700; font-size:20px; letter-spacing:1px; border-left:1px solid rgba(255,255,255,.3); padding-left:14px; }
+  .f-logo-img{ height:38px; display:block; }
+  .f-logo-text{ color:#fff; font-weight:700; font-size:20px; letter-spacing:1px; border-left:1px solid rgba(148,163,184,.35); padding-left:14px; white-space:nowrap; }
+  .top-actions{ display:flex; align-items:center; gap:14px; }
+  .main-nav{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:flex; gap:38px; }
+  .main-nav a{ color:#CBD5E1; font-size:14px; padding:6px 0; position:relative; transition:color .2s; }
+  .main-nav a:hover{ color:#fff; }
+  .main-nav a::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:2px; border-radius:2px;
+    background:var(--grad); transform:scaleX(0); transform-origin:left; transition:transform .25s; }
+  .main-nav a:hover::after{ transform:scaleX(1); }
+  .lang{ color:#CBD5E1; font-size:14px; border:1px solid rgba(255,255,255,.25); border-radius:999px; padding:7px 16px;
+    cursor:pointer; user-select:none; transition:border-color .2s; }
+  .lang:hover{ border-color:rgba(255,255,255,.6); }
+  .lang b{ color:#fff; font-weight:600; }
+  .btn-ghost{ color:#fff; font-size:14px; border:1px solid rgba(255,255,255,.4); border-radius:999px; padding:8px 22px;
+    transition:background .2s,border-color .2s; cursor:pointer; }
+  .btn-ghost:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.7); }
+  .btn-ghost.logged-in:hover{ background:rgba(239,68,68,.14); border-color:rgba(248,113,113,.6); color:#FCA5A5; }
+
+  /* ===== 模块1 轮播 ===== */
+  .hero{ position:relative; background:radial-gradient(1200px 600px at 70% 20%, #1E293B 0%, var(--dark) 60%);
+    color:#fff; min-height:760px; overflow:hidden; }
+  .hero::after{ content:""; position:absolute; right:-160px; top:80px; width:640px; height:640px; border-radius:50%;
+    background:radial-gradient(circle, rgba(6,182,212,.22), transparent 65%); pointer-events:none; }
+  .slides{ position:relative; height:760px; }
+  .slide{ position:absolute; inset:0; display:flex; align-items:center; opacity:0; visibility:hidden;
+    transform:translateX(60px); transition:opacity .7s ease, transform .7s ease, visibility .7s; }
+  .slide.active{ opacity:1; visibility:visible; transform:translateX(0); z-index:2; }
+  .slide.leaving{ opacity:0; visibility:visible; transform:translateX(-60px); z-index:1; }
+  .hero-inner{ display:grid; grid-template-columns:1.05fr .95fr; gap:40px; align-items:center; width:100%; }
+  .tag{ display:inline-block; font-size:13px; letter-spacing:2px; color:#7DD3FC; border:1px solid rgba(125,211,252,.35);
+    border-radius:999px; padding:6px 16px; margin-bottom:26px; }
+  .slide h1{ font-size:56px; line-height:1.15; font-weight:800; margin-bottom:20px; }
+  .slide h1 span{ background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .slide p{ color:#94A3B8; font-size:18px; line-height:1.8; max-width:480px; margin-bottom:36px; }
+  .hero-cta{ display:flex; gap:16px; }
+  .hero-cta .primary{ background:var(--grad); color:#fff; font-weight:600; padding:14px 34px; border-radius:999px; font-size:15px;
+    box-shadow:0 10px 30px rgba(37,99,235,.4); transition:transform .2s, box-shadow .2s; }
+  .hero-cta .primary:hover{ transform:translateY(-2px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+  .hero-cta .secondary{ color:#E2E8F0; border:1px solid rgba(255,255,255,.3); padding:14px 34px; border-radius:999px; font-size:15px;
+    transition:background .2s; }
+  .hero-cta .secondary:hover{ background:rgba(255,255,255,.1); }
+  .hero-visual{ position:relative; display:flex; justify-content:center; }
+  .device{ width:340px; height:420px; border-radius:36px; border:1px solid rgba(148,163,184,.25);
+    box-shadow:0 40px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
+    display:flex; align-items:center; justify-content:center; position:relative; transition:transform .5s; }
+  .slide.active .device{ animation:float 5s ease-in-out infinite; }
+  @keyframes float{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-14px);} }
+  .device::before{ content:""; position:absolute; inset:18px; border-radius:26px; background:var(--dev-grad, linear-gradient(135deg, rgba(37,99,235,.35), rgba(6,182,212,.25))); }
+  .device span{ position:relative; font-size:15px; color:#fff; letter-spacing:3px; }
+  .device.v-img{ border:none; overflow:hidden; }
+  .device.v-img::before{ display:none; }
+  .device.v-img img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .hero-visual .glow{ position:absolute; top:50%; left:50%; width:560px; height:560px; transform:translate(-50%,-50%);
+    background:radial-gradient(circle, rgba(37,99,235,.28), rgba(6,182,212,.12) 45%, transparent 68%); border-radius:50%; }
+  .hero-prod{ position:relative; max-width:520px; max-height:480px; width:auto; height:auto; filter:drop-shadow(0 44px 48px rgba(0,0,0,.6)); }
+  .slide.active .hero-prod{ animation:float 5s ease-in-out infinite; }
+  .v1{ background:linear-gradient(160deg,#1E3A8A,#0F172A);} .v2{ background:linear-gradient(160deg,#0E7490,#0F172A);}
+  .v3{ background:linear-gradient(160deg,#4C1D95,#0F172A);} .v4{ background:linear-gradient(160deg,#9F1239,#0F172A);}
+  .v5{ background:linear-gradient(160deg,#134E4A,#0F172A);}
+
+  .carousel-ui{ position:absolute; bottom:44px; left:0; right:0; display:flex; align-items:center; justify-content:center; gap:28px; z-index:10; }
+  .arrow{ width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.25); color:#CBD5E1;
+    display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; transition:all .2s; background:transparent; }
+  .arrow:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.6); color:#fff; }
+  .dots{ display:flex; gap:10px; }
+  .dot{ width:8px; height:8px; border-radius:999px; background:rgba(255,255,255,.25); cursor:pointer; transition:all .3s; border:none; padding:0; }
+  .dot.on{ width:28px; background:var(--accent2); }
+
+  /* ===== 通用区块 ===== */
+  section{ padding:110px 0; }
+  .sec-head{ text-align:center; margin-bottom:64px; }
+  .sec-kicker{ color:var(--accent); font-size:14px; font-weight:700; letter-spacing:3px; margin-bottom:14px; }
+  .sec-title{ font-size:38px; font-weight:800; }
+  .sec-desc{ color:var(--sub); font-size:16px; margin-top:14px; }
+
+  /* 滚动渐入动画 */
+  .reveal{ opacity:0; transform:translateY(36px); transition:opacity .8s ease, transform .8s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  /* ===== 模块2 iDOCK 连接层（App · 硬件 · 生态） ===== */
+  .cx{ background:#FFFFFF; color:#0F172A; position:relative; overflow:hidden; padding:72px 0 110px; }
+  .cx .wrap{ position:relative; z-index:1; }
+  .cx-eyebrow{ font-size:13px; letter-spacing:3px; color:var(--accent); font-weight:700; text-transform:uppercase; }
+  .cx-headrow{ margin:14px 0 40px; }
+  .cx-headrow h1{ font-size:46px; line-height:1.15; font-weight:800; letter-spacing:-.01em; color:#0F172A; }
+  .cx-headrow h1 span{ color:#0F172A; }
+  .cx-headrow p{ max-width:470px; color:#475569; font-size:15px; line-height:1.8; padding-bottom:6px; }
+  .cx-panel{ position:relative; background:var(--dark); color:#F8FAFC; border-radius:32px;
+    padding:84px 48px 52px; box-shadow:0 30px 80px rgba(11,15,26,.35); }
+  .cx-cta{ position:absolute; top:26px; right:32px; z-index:5; display:inline-flex; align-items:center; gap:9px; background:var(--grad); color:#fff;
+    font-weight:600; font-size:15px; padding:15px 32px; border-radius:999px; text-decoration:none; white-space:nowrap;
+    box-shadow:0 14px 34px rgba(37,99,235,.42); transition:transform .25s, box-shadow .25s; }
+  .cx-cta span{ font-weight:400; transition:transform .25s; }
+  .cx-cta:hover{ transform:translateY(-2px); box-shadow:0 18px 44px rgba(37,99,235,.6); }
+  .cx-cta:hover span{ transform:translateX(4px); }
+  .cx-main{ display:flex; align-items:center; gap:26px; }
+  .cx-col{ display:flex; flex-direction:column; gap:12px; }
+  .cx-colL{ width:308px; flex:none; }
+  .cx-colR{ width:336px; flex:none; }
+  .cx-coltag{ font-size:11px; letter-spacing:2.5px; color:#7DD3FC; font-weight:700; text-transform:uppercase; }
+  .cx-colhead{ font-size:21px; font-weight:800; margin:-2px 0 6px; }
+  .cx-prod{ display:flex; align-items:center; gap:12px; background:linear-gradient(180deg,#101A2E,#0D1526);
+    border:1px solid rgba(148,163,184,.16); border-radius:15px; padding:12px 14px; position:relative; }
+  .cx-prod::after{ content:""; position:absolute; right:-4px; top:50%; transform:translateY(-50%);
+    width:8px; height:8px; border-radius:50%; background:#67E8F9; box-shadow:0 0 10px #67E8F9; }
+  .cx-th{ flex:none; width:64px; height:56px; border-radius:10px; background:rgba(148,163,184,.07);
+    border:1px solid rgba(148,163,184,.12); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .cx-th img{ max-width:92%; max-height:92%; object-fit:contain; }
+  .cx-en{ font-size:10px; letter-spacing:1.5px; color:var(--accent2); font-weight:700; text-transform:uppercase; }
+  .cx-nm{ font-size:15px; font-weight:700; margin:2px 0 3px; }
+  .cx-ds{ font-size:11.5px; color:#94A3B8; line-height:1.5; }
+  .cx-core{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; position:relative; }
+  .cx-core::before{ content:""; position:absolute; top:46%; left:50%; transform:translate(-50%,-50%);
+    width:430px; height:430px; border-radius:50%; border:1px dashed rgba(103,232,249,.22); }
+  .cx-core::after{ content:""; position:absolute; top:46%; left:50%; transform:translate(-50%,-50%);
+    width:340px; height:340px; border-radius:50%;
+    background:radial-gradient(circle, rgba(37,99,235,.22), rgba(6,182,212,.06) 55%, transparent 70%); }
+  .cx-coretag{ font-size:11px; letter-spacing:3px; color:#7DD3FC; font-weight:700; text-transform:uppercase; position:relative; z-index:2; }
+  .cx-corehead{ font-size:27px; font-weight:800; line-height:1.2; margin:8px 0 18px; position:relative; z-index:2; }
+  .cx-icon{ position:relative; z-index:2; width:118px; height:118px; border-radius:30px; overflow:hidden;
+    box-shadow:0 22px 46px -10px rgba(37,99,235,.55), 0 0 0 8px rgba(37,99,235,.10); }
+  .cx-icon::after{ content:""; position:absolute; inset:-22px; border-radius:44px; z-index:-1;
+    background:radial-gradient(circle, rgba(103,232,249,.22), transparent 65%); }
+  .cx-icon img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .cx-corename{ font-size:26px; font-weight:800; margin-top:16px; position:relative; z-index:2; }
+  .cx-coresub{ font-size:10px; letter-spacing:3px; color:#64748B; text-transform:uppercase; margin-top:4px; position:relative; z-index:2; }
+  .cx-corecap{ font-size:13px; color:#94A3B8; max-width:360px; margin:14px 0 18px; line-height:1.6; position:relative; z-index:2; }
+  .cx-actions{ display:flex; gap:10px; position:relative; z-index:2; }
+  .cx-act{ display:flex; flex-direction:column; align-items:center; gap:6px; min-width:70px; padding:11px 12px 10px;
+    background:linear-gradient(180deg,#101A2E,#0D1526); border:1px solid rgba(148,163,184,.16); border-radius:13px;
+    color:#CBD5E1; font-size:12px; font-weight:600; white-space:nowrap; }
+  .cx-act svg{ color:#67E8F9; }
+  .cx-link{ position:relative; z-index:2; display:inline-block; margin-top:18px; color:#67E8F9; font-size:13.5px;
+    font-weight:600; transition:opacity .2s, transform .2s; }
+  .cx-link:hover{ opacity:.85; transform:translateX(4px); }
+  .cx-eco{ background:linear-gradient(180deg,#101A2E,#0D1526); border:1px solid rgba(148,163,184,.16);
+    border-left:3px solid var(--accent); border-radius:14px; padding:15px 17px; }
+  .cx-eco--slim{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 17px; }
+  .cx-eco--slim .cx-eds{ margin-top:0; flex-shrink:0; }
+  .cx-etop{ display:flex; align-items:baseline; gap:12px; }
+  .cx-pf{ font-size:10px; letter-spacing:2px; color:var(--accent2); font-weight:700; text-transform:uppercase; }
+  .cx-enm{ font-size:19px; font-weight:800; }
+  .cx-eds{ font-size:12px; color:#94A3B8; margin-top:2px; }
+  .cx-feats{ display:flex; margin-top:12px; border-top:1px solid rgba(148,163,184,.12); }
+  .cx-feat{ flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; padding:11px 0 3px;
+    font-size:11.5px; color:#CBD5E1; }
+  .cx-feat + .cx-feat{ border-left:1px solid rgba(148,163,184,.12); }
+  .cx-fi{ width:32px; height:32px; border-radius:9px; background:rgba(37,99,235,.14);
+    border:1px solid rgba(37,99,235,.28); display:flex; align-items:center; justify-content:center; color:#7DD3FC; }
+  .cx-lead{ text-align:center; color:#94A3B8; font-size:14.5px; line-height:1.7; margin:48px 0 22px; }
+  .cx-flow{ display:flex; align-items:center; justify-content:space-between; gap:18px;
+    background:linear-gradient(180deg,#101A2E,#0D1526); border:1px solid rgba(148,163,184,.16);
+    border-radius:999px; padding:14px 36px; margin-top:0; }
+  .cx-fnode{ display:flex; align-items:center; gap:11px; }
+  .cx-fic{ width:36px; height:36px; border-radius:10px; background:rgba(6,182,212,.14);
+    border:1px solid rgba(6,182,212,.3); display:flex; align-items:center; justify-content:center; color:#67E8F9; }
+  .cx-ft{ font-size:14px; font-weight:700; }
+  .cx-fd{ font-size:11px; color:#94A3B8; }
+  .cx-farr{ color:#475569; font-size:19px; }
+
+  /* ===== 模块3 产品交替 ===== */
+  #products{ background:#F8FAFC; border-top:1px solid #E9EEF5; position:relative; z-index:2; }
+  .prod-row{ display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; margin-bottom:110px; }
+  .prod-row:last-child{ margin-bottom:0; }
+  .prod-row.flip .prod-img{ order:2; }
+  .prod-img{ height:420px; border-radius:28px; position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(120% 120% at 50% 0%, #16203A 0%, #0B0F1A 62%);
+    border:1px solid rgba(148,163,184,.16);
+    transition:transform .45s ease, box-shadow .45s ease, border-color .45s ease; cursor:pointer; }
+  .prod-img::before{ content:""; position:absolute; inset:0;
+    background-image:linear-gradient(rgba(148,163,184,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.07) 1px, transparent 1px);
+    background-size:44px 44px;
+    -webkit-mask-image:radial-gradient(70% 70% at 50% 55%, #000 30%, transparent 100%);
+            mask-image:radial-gradient(70% 70% at 50% 55%, #000 30%, transparent 100%); }
+  .prod-img .pi-glow{ position:absolute; top:50%; left:50%; width:440px; height:440px; transform:translate(-50%,-50%);
+    border-radius:50%; background:radial-gradient(circle, var(--ptint, rgba(37,99,235,.4)), transparent 65%);
+    opacity:.55; transition:opacity .5s ease, transform .5s ease; }
+  .prod-img .pi-frame{ position:relative; display:flex; align-items:center; justify-content:center;
+    max-width:76%; max-height:76%; animation:float 5.5s ease-in-out infinite; }
+  .prod-img img{ max-width:100%; max-height:100%;
+    filter:drop-shadow(0 34px 34px rgba(0,0,0,.55));
+    transition:transform .5s cubic-bezier(.2,.8,.25,1.2), filter .5s; }
+  .prod-img:hover{ transform:translateY(-6px); border-color:var(--pline, rgba(59,130,246,.55));
+    box-shadow:0 34px 70px rgba(11,15,26,.45), 0 0 44px var(--pline, rgba(37,99,235,.28)); }
+  .prod-img:hover .pi-glow{ opacity:.95; transform:translate(-50%,-50%) scale(1.14); }
+  .prod-img:hover img{ transform:scale(1.06) rotate(-2deg);
+    filter:drop-shadow(0 40px 44px rgba(0,0,0,.65)); }
+  .p1{ --ptint:rgba(37,99,235,.42);  --pline:rgba(59,130,246,.5); }
+  .p2{ --ptint:rgba(6,182,212,.4);   --pline:rgba(34,211,238,.5); }
+  .p3{ --ptint:rgba(139,92,246,.42); --pline:rgba(167,139,250,.5); }
+  .p4{ --ptint:rgba(244,63,94,.38);  --pline:rgba(251,113,133,.5); }
+  .p5{ --ptint:rgba(16,185,129,.4);  --pline:rgba(52,211,153,.5); }
+  .prod-num{ font-size:14px; font-weight:800; color:var(--accent); letter-spacing:2px; margin-bottom:12px; }
+  .prod-info h3{ font-size:30px; font-weight:800; margin-bottom:16px; }
+  .prod-info p{ color:var(--sub); font-size:16px; line-height:1.85; margin-bottom:24px; }
+  .prod-tags{ display:flex; gap:10px; flex-wrap:wrap; }
+  .prod-tags span{ font-size:13px; color:#334155; background:#F1F5F9; border:1px solid var(--line); padding:7px 16px; border-radius:999px; }
+
+  /* ===== 模块4 团队+合作 ===== */
+  .team-contact{ background:#FFFFFF; color:var(--ink); border-top:1px solid #E9EEF5; position:relative; z-index:2; }
+  .tc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:80px; }
+  .tc-grid .sec-kicker{ color:var(--accent); }
+  .tc-left h2{ font-size:34px; font-weight:800; margin-bottom:14px; }
+  .tc-left>p{ color:#475569; font-size:16px; line-height:1.8; margin-bottom:38px; }
+  .team-item{ display:flex; gap:18px; padding:22px 0; border-top:1px solid var(--line); transition:padding-left .3s; }
+  .team-item:hover{ padding-left:8px; }
+  .team-ico{ width:46px; height:46px; flex:none; border-radius:13px; background:rgba(37,99,235,.1); border:1px solid rgba(37,99,235,.24);
+    display:flex; align-items:center; justify-content:center; color:var(--accent); font-weight:700; }
+  .team-item h4{ font-size:17px; margin-bottom:6px; }
+  .team-item p{ color:#475569; font-size:14px; line-height:1.7; }
+  .team-tags{ display:flex; flex-wrap:wrap; gap:12px; margin:8px 0 30px; }
+  .team-tags span{ font-size:13px; color:var(--accent); background:rgba(37,99,235,.07); border:1px solid rgba(37,99,235,.28);
+    padding:8px 18px; border-radius:999px; transition:all .25s; }
+  .team-tags span:hover{ background:rgba(37,99,235,.15); border-color:rgba(37,99,235,.5); }
+  .tc-link{ display:inline-block; color:var(--accent); font-size:15px; font-weight:600; transition:opacity .2s, transform .2s; }
+  .tc-link:hover{ opacity:.85; transform:translateX(4px); }
+  .tc-more{ text-align:center; margin-top:64px; }
+  .tc-btn{ display:inline-block; color:var(--accent); font-size:15px; font-weight:600; padding:14px 42px; border-radius:999px;
+    border:1px solid rgba(37,99,235,.4); background:rgba(37,99,235,.06); transition:all .3s; }
+  .tc-btn:hover{ background:var(--grad); border-color:transparent; color:#fff;
+    box-shadow:0 12px 32px rgba(37,99,235,.4); transform:translateY(-2px); }
+  .coop-news h3{ font-size:24px; font-weight:800; margin-bottom:26px; }
+  .news-item{ display:flex; gap:20px; padding:20px 0; border-top:1px solid var(--line); transition:padding-left .3s; }
+  .news-item:hover{ padding-left:8px; }
+  .news-date{ flex:none; width:64px; color:var(--accent); font-size:13px; font-weight:700; letter-spacing:1px; padding-top:3px; }
+  .news-item h4{ font-size:16px; margin-bottom:6px; }
+  .news-item p{ color:#475569; font-size:13px; line-height:1.7; }
+  .coop-news .tc-link{ margin-top:24px; }
+  .form-card{ background:#F8FAFC; border:1px solid var(--line); border-radius:24px; padding:40px; }
+  .form-card h3{ font-size:24px; font-weight:700; margin-bottom:8px; }
+  .form-card>p{ color:#475569; font-size:14px; margin-bottom:28px; }
+  .f-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .f-field{ margin-bottom:16px; }
+  .f-field input,.f-field textarea{ width:100%; background:#FFFFFF; border:1px solid var(--line);
+    border-radius:12px; padding:13px 16px; color:var(--ink); font-size:14px; font-family:inherit; outline:none; transition:border-color .2s; }
+  .f-field input:focus,.f-field textarea:focus{ border-color:var(--accent2); }
+  .f-field textarea{ height:104px; resize:none; }
+  .f-submit{ width:100%; background:var(--grad); color:#fff; border:none; border-radius:12px; padding:15px; cursor:pointer;
+    font-size:15px; font-weight:700; font-family:inherit; box-shadow:0 10px 26px rgba(37,99,235,.35); transition:transform .2s, opacity .2s; }
+  .f-submit:hover{ transform:translateY(-2px); }
+  .f-submit.sent{ background:linear-gradient(135deg,#059669,#10B981); pointer-events:none; }
+
+  /* ===== 页脚 ===== */
+  footer{ background:#070B13; color:#94A3B8; padding:72px 0 36px; }
+  .f-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:48px; padding-bottom:48px; border-bottom:1px solid rgba(148,163,184,.15); }
+  .f-brand{ color:#fff; font-weight:700; font-size:18px; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+  .f-col h5{ color:#fff; font-size:15px; margin-bottom:18px; }
+  .f-col a{ display:block; font-size:14px; margin-bottom:12px; transition:color .2s; }
+  .f-col a:hover{ color:#fff; }
+  .f-bottom{ display:flex; justify-content:space-between; padding-top:28px; font-size:13px; color:#64748B; }
+
+  /* 登录弹窗 */
+  .login-mask{ position:fixed; inset:0; z-index:300; background:rgba(2,6,23,.62); backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:opacity .3s, visibility .3s; }
+  .login-mask.show{ opacity:1; visibility:visible; }
+  .login-card{ position:relative; width:400px; max-width:calc(100vw - 48px); background:#111827; border:1px solid rgba(148,163,184,.25);
+    border-radius:24px; padding:42px 40px 34px; box-shadow:0 40px 90px rgba(0,0,0,.5);
+    transform:translateY(24px) scale(.96); transition:transform .35s; }
+  .login-mask.show .login-card{ transform:none; }
+  .login-close{ position:absolute; top:16px; right:18px; width:34px; height:34px; border:none; border-radius:50%;
+    background:rgba(255,255,255,.08); color:#94A3B8; font-size:18px; cursor:pointer; transition:background .2s,color .2s; }
+  .login-close:hover{ background:rgba(255,255,255,.16); color:#fff; }
+  .login-card h3{ color:#fff; font-size:24px; font-weight:800; margin-bottom:8px; }
+  .login-sub{ color:#94A3B8; font-size:14px; margin-bottom:28px; }
+  .lg-field{ margin-bottom:16px; }
+  .lg-field input{ width:100%; background:rgba(255,255,255,.06); border:1px solid rgba(148,163,184,.3); border-radius:12px;
+    padding:14px 16px; color:#E2E8F0; font-size:15px; font-family:inherit; outline:none; transition:border-color .2s; }
+  .lg-field input:focus{ border-color:var(--accent2); }
+  .lg-code{ display:flex; gap:12px; }
+  .lg-code input{ flex:1; }
+  .lg-code button{ flex:none; padding:0 18px; border-radius:12px; border:1px solid rgba(103,232,249,.5); background:transparent;
+    color:#67E8F9; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .2s; white-space:nowrap; }
+  .lg-code button:hover:not(:disabled){ background:rgba(34,211,238,.12); }
+  .lg-code button:disabled{ opacity:.45; cursor:not-allowed; }
+  .lg-err{ min-height:20px; color:#F87171; font-size:13px; margin-bottom:12px; }
+  .lg-submit{ width:100%; padding:15px; border:none; border-radius:12px; background:var(--grad); color:#fff;
+    font-size:16px; font-weight:700; font-family:inherit; cursor:pointer; box-shadow:0 10px 26px rgba(37,99,235,.35);
+    transition:transform .2s; }
+  .lg-submit:hover{ transform:translateY(-2px); }
+  .lg-submit.ok{ background:linear-gradient(135deg,#059669,#10B981); pointer-events:none; }
+  .lg-agree{ margin-top:18px; text-align:center; color:#64748B; font-size:12px; }
+
+  /* Toast 提示 */
+  .toast{ position:fixed; bottom:36px; left:50%; transform:translate(-50%, 80px); background:var(--ink); color:#fff;
+    padding:13px 28px; border-radius:999px; font-size:14px; z-index:400; opacity:0; transition:all .4s; pointer-events:none;
+    box-shadow:0 16px 40px rgba(0,0,0,.3); }
+  .toast.show{ opacity:1; transform:translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+<!-- 顶部栏：左 Logo / 中 导航 / 右 中英文切换 + 登录 -->
+<header class="topbar" id="topbar">
+  <a class="logo" href="#top"><img class="logo-img" src="./logo-white.png" alt="PISEN 品胜"><span class="logo-text">AI Lab</span></a>
+  <nav class="main-nav">
+    <a href="./软件官网.html" target="_blank" rel="noopener">APP下载</a>
+    <a href="./商务协作.html" target="_blank" rel="noopener">商务协作</a>
+    <a href="./加入我们.html" target="_blank" rel="noopener">加入我们</a>
+    <a href="./服务与支持.html" target="_blank" rel="noopener">服务与支持</a>
+  </nav>
+  <div class="top-actions">
+    <div class="lang" id="langBtn" title="语言切换（演示）"><b>中</b> / EN</div>
+    <a class="btn-ghost" id="loginBtn">登录</a>
+  </div>
+</header>
+
+<!-- 模块1：硬件轮播（5张，自动播放） -->
+<section class="hero" id="top" style="padding:0;">
+  <div class="slides" id="slides">
+
+    <div class="slide active">
+      <div class="wrap hero-inner">
+        <div>
+          <div class="tag">VoxCliP · 01 / 05</div>
+          <h1>VoxCliP<br><span>AI 耳夹耳机</span></h1>
+          <p>卖点文案占位：一句话说清 VoxCliP 的核心价值（例如：无感佩戴的耳夹形态 + AI 实时转写翻译），配合产品主视觉呈现。</p>
+          <div class="hero-cta"><a class="primary" href="#products">了解更多</a></div>
+        </div>
+        <div class="hero-visual"><div class="glow"></div><img class="hero-prod" src="./voxclip-cut.png" alt="VoxCliP AI 耳夹耳机"></div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="wrap hero-inner">
+        <div>
+          <div class="tag">iDock · 02 / 05</div>
+          <h1>iDock<br><span>桌面机器人</span></h1>
+          <p>卖点文案占位：一句话说清 iDock 桌面机器人的核心价值（例如：手机即大脑，桌面上的 AI 伙伴），配合产品主视觉呈现。</p>
+          <div class="hero-cta"><a class="primary" href="#products">了解更多</a></div>
+        </div>
+        <div class="hero-visual"><div class="glow"></div><img class="hero-prod" src="./idock-cut.png" alt="iDock 桌面机器人"></div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="wrap hero-inner">
+        <div>
+          <div class="tag">千问机器人 · 03 / 05</div>
+          <h1>千问<br><span>AI 机器人</span></h1>
+          <p>卖点文案占位：一句话说清千问机器人的核心价值，配合产品主视觉呈现。</p>
+          <div class="hero-cta"><a class="primary" href="#products">了解更多</a></div>
+        </div>
+        <div class="hero-visual"><div class="glow"></div><img class="hero-prod" src="./qwen-cut.png" alt="千问机器人"></div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="wrap hero-inner">
+        <div>
+          <div class="tag">小Buddy · 04 / 05</div>
+          <h1>小Buddy<br><span>随身 AI 硬件</span></h1>
+          <p>卖点文案占位：一句话说清小Buddy的核心价值，配合产品主视觉呈现。</p>
+          <div class="hero-cta"><a class="primary" href="#products">了解更多</a></div>
+        </div>
+        <div class="hero-visual"><div class="glow"></div><img class="hero-prod" src="./buddy-cut.png" alt="小Buddy"></div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="wrap hero-inner">
+        <div>
+          <div class="tag">AI 智能背夹 · 05 / 05</div>
+          <h1>AI 智能背夹<br><span>随身生产力</span></h1>
+          <p>卖点文案占位：一句话说清 AI 智能背夹的核心价值（例如：磁吸即用的个人工作台），配合产品主视觉呈现。</p>
+          <div class="hero-cta"><a class="primary" href="#products">了解更多</a></div>
+        </div>
+        <div class="hero-visual"><div class="glow"></div><img class="hero-prod" src="./beijia-cut.png" alt="AI 智能背夹"></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="carousel-ui">
+    <button class="arrow" id="prevBtn" aria-label="上一张">‹</button>
+    <div class="dots" id="dots"></div>
+    <button class="arrow" id="nextBtn" aria-label="下一张">›</button>
+  </div>
+</section>
+
+<!-- 模块2：iDOCK 连接层（App · 硬件 · 生态） -->
+<section class="cx">
+  <div class="wrap">
+    <div class="cx-eyebrow reveal">iDOCK / Connective Layer</div>
+    <div class="cx-headrow reveal">
+      <h1>让硬件感知，<span>让生态行动</span></h1>
+    </div>
+
+    <div class="cx-panel reveal">
+      <a class="cx-cta" href="./软件官网.html" target="_blank" rel="noopener">了解 iDOCK App <span>→</span></a>
+
+      <div class="cx-main">
+      <!-- 左：硬件输入 -->
+      <div class="cx-col cx-colL">
+        <div class="cx-coltag">Hardware Input</div>
+        <div class="cx-colhead">捕捉真实场景</div>
+        <div class="cx-prod">
+          <div class="cx-th"><img src="./idock-cut.png" alt="iDOCK Desktop AI Station"></div>
+          <div>
+            <div class="cx-en">Desktop AI Station</div>
+            <div class="cx-nm">iDOCK Desktop AI Station</div>
+            <div class="cx-ds">把语音对话、AI 跟拍、手势控制与全场景充电放在同一个桌面入口。</div>
+          </div>
+        </div>
+        <div class="cx-prod">
+          <div class="cx-th"><img src="./buddy-cut.png" alt="小Buddy AI 录音充电宝"></div>
+          <div>
+            <div class="cx-en">24H AI Recording</div>
+            <div class="cx-nm">小Buddy AI 录音充电宝</div>
+            <div class="cx-ds">充电、智录与会议记录三合一，让整天的灵感和讨论都能被保留。</div>
+          </div>
+        </div>
+        <div class="cx-prod">
+          <div class="cx-th"><img src="./voxclip-cut.png" alt="iDOCK AI 开放式耳机"></div>
+          <div>
+            <div class="cx-en">Wearable AI Audio</div>
+            <div class="cx-nm">iDOCK AI 开放式耳机</div>
+            <div class="cx-ds">让 AI 助手跟随日常移动，从通话、翻译到随身记录，不再被桌面限制。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中：智能核心 -->
+      <div class="cx-core">
+        <div class="cx-coretag">The Intelligence Core</div>
+        <div class="cx-corehead">让每一次记录，<br>都有下一步。</div>
+        <div class="cx-icon"><img src="./idock-app-icon.png" alt="iDOCK App"></div>
+        <div class="cx-corename">iDOCK</div>
+        <div class="cx-coresub">One Input · Every Workflow</div>
+        <div class="cx-corecap">连接硬件感知与工作场景，把声音整理成可搜索、可分享、可执行的内容。</div>
+        <div class="cx-actions">
+          <div class="cx-act"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a7 7 0 01-14 0M12 18v3"/></svg>AI录音</div>
+          <div class="cx-act"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg>AI翻译</div>
+          <div class="cx-act"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="2" y="6" width="13" height="12" rx="2"/><path d="M15 10l7-3v10l-7-3z"/></svg>音视频翻译</div>
+          <div class="cx-act"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5M9 5h6"/><circle cx="9.5" cy="13" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="13" r="1" fill="currentColor" stroke="none"/><path d="M9.5 16.5h5"/></svg>自研Agent</div>
+        </div>
+      </div>
+
+      <!-- 右：生态输出 -->
+      <div class="cx-col cx-colR">
+        <div class="cx-coltag">Workplace Output</div>
+        <div class="cx-colhead">在熟悉的工具里执行</div>
+        <div class="cx-eco">
+          <div class="cx-etop"><span class="cx-pf">DingTalk</span><span class="cx-enm">钉钉</span></div>
+          <div class="cx-eds">把现场沟通直接沉淀为组织可继续执行的信息。</div>
+          <div class="cx-feats">
+            <div class="cx-feat"><div class="cx-fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M21 12a8 8 0 01-8 8H4l2-3a8 8 0 1115-5z"/></svg></div>钉钉消息</div>
+            <div class="cx-feat"><div class="cx-fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6M9 13h6M9 17h6"/></svg></div>钉钉文档</div>
+            <div class="cx-feat"><div class="cx-fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="2" y="6" width="13" height="12" rx="2"/><path d="M15 10l7-3v10l-7-3z"/></svg></div>钉钉会议</div>
+          </div>
+        </div>
+        <div class="cx-eco">
+          <div class="cx-etop"><span class="cx-pf">Feishu</span><span class="cx-enm">飞书</span></div>
+          <div class="cx-eds">让记录、文档与日程在同一条工作流中自然流转。</div>
+          <div class="cx-feats">
+            <div class="cx-feat"><div class="cx-fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M21 12a8 8 0 01-8 8H4l2-3a8 8 0 1115-5z"/></svg></div>飞书消息</div>
+            <div class="cx-feat"><div class="cx-fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6M9 13h6M9 17h6"/></svg></div>飞书文档</div>
+            <div class="cx-feat"><div class="cx-fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg></div>飞书日历</div>
+          </div>
+        </div>
+        <div class="cx-eco cx-eco--slim">
+          <div class="cx-etop"><span class="cx-enm">work Buddy</span></div>
+          <div class="cx-eds">及更多协作平台 · 持续接入中</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部流程 -->
+    <div class="cx-lead">iDOCK 把不同 AI 硬件采集到的语音与场景信息，整理成消息、文档、会议结论与待办，再送回熟悉的协作平台。</div>
+    <div class="cx-flow">
+      <div class="cx-fnode"><div class="cx-fic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a7 7 0 01-14 0M12 18v3"/></svg></div><div><div class="cx-ft">硬件采集</div><div class="cx-fd">声音与场景进入</div></div></div>
+      <div class="cx-farr">→</div>
+      <div class="cx-fnode"><div class="cx-fic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M9 15c1.5 1.5 4.5 1.5 6 0"/></svg></div><div><div class="cx-ft">iDOCK 理解</div><div class="cx-fd">转写、总结与编排</div></div></div>
+      <div class="cx-farr">→</div>
+      <div class="cx-fnode"><div class="cx-fic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg></div><div><div class="cx-ft">生态执行</div><div class="cx-fd">消息、文档与日程</div></div></div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- 模块3：AI 硬件产品功能（5个产品，左右交替） -->
+<section id="products">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">AI HARDWARE</div>
+      <div class="sec-title">AI 硬件产品矩阵</div>
+      <div class="sec-desc">五款产品，覆盖听、说、记、看、陪伴五大场景（占位描述）</div>
+    </div>
+
+    <div class="prod-row reveal">
+      <div class="prod-img p1"><div class="pi-glow"></div><div class="pi-frame"><img src="./voxclip-cut.png" alt="VoxCliP AI 耳夹耳机"></div></div>
+      <div class="prod-info">
+        <div class="prod-num">01</div>
+        <h3>VoxCliP · AI 耳夹耳机</h3>
+        <p>核心功能描述占位：这是 VoxCliP 的一段功能介绍文字，说明它解决什么问题、面向什么场景，以及最关键的差异化能力。</p>
+        <div class="prod-tags"><span>功能点 A</span><span>功能点 B</span><span>功能点 C</span></div>
+      </div>
+    </div>
+
+    <div class="prod-row flip reveal">
+      <div class="prod-img p2"><div class="pi-glow"></div><div class="pi-frame"><img src="./idock-cut.png" alt="iDock 桌面机器人"></div></div>
+      <div class="prod-info">
+        <div class="prod-num">02</div>
+        <h3>iDock · 桌面机器人</h3>
+        <p>核心功能描述占位：这是 iDock 的一段功能介绍文字，说明它解决什么问题、面向什么场景，以及最关键的差异化能力。</p>
+        <div class="prod-tags"><span>功能点 A</span><span>功能点 B</span><span>功能点 C</span></div>
+      </div>
+    </div>
+
+    <div class="prod-row reveal">
+      <div class="prod-img p3"><div class="pi-glow"></div><div class="pi-frame"><img src="./qwen-cut.png" alt="千问 AI 机器人"></div></div>
+      <div class="prod-info">
+        <div class="prod-num">03</div>
+        <h3>千问 · AI 机器人</h3>
+        <p>核心功能描述占位：这是千问机器人的一段功能介绍文字，说明它解决什么问题、面向什么场景，以及最关键的差异化能力。</p>
+        <div class="prod-tags"><span>功能点 A</span><span>功能点 B</span><span>功能点 C</span></div>
+      </div>
+    </div>
+
+    <div class="prod-row flip reveal">
+      <div class="prod-img p4"><div class="pi-glow"></div><div class="pi-frame"><img src="./buddy-cut.png" alt="小Buddy"></div></div>
+      <div class="prod-info">
+        <div class="prod-num">04</div>
+        <h3>小Buddy · 随身 AI 硬件</h3>
+        <p>核心功能描述占位：这是小Buddy的一段功能介绍文字，说明它解决什么问题、面向什么场景，以及最关键的差异化能力。</p>
+        <div class="prod-tags"><span>功能点 A</span><span>功能点 B</span><span>功能点 C</span></div>
+      </div>
+    </div>
+
+    <div class="prod-row reveal">
+      <div class="prod-img p5"><div class="pi-glow"></div><div class="pi-frame"><img src="./beijia-cut.png" alt="AI 智能背夹"></div></div>
+      <div class="prod-info">
+        <div class="prod-num">05</div>
+        <h3>AI 智能背夹 · 随身生产力</h3>
+        <p>核心功能描述占位：这是 AI 智能背夹的一段功能介绍文字，说明它解决什么问题、面向什么场景，以及最关键的差异化能力。</p>
+        <div class="prod-tags"><span>功能点 A</span><span>功能点 B</span><span>功能点 C</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 模块4：团队职能简介 + 合作动态 -->
+<section class="team-contact" id="contact">
+  <div class="wrap tc-grid">
+    <div class="tc-left reveal">
+      <div class="sec-kicker">OUR TEAM</div>
+      <h2>团队职能</h2>
+      <p>PISEN AI Lab 是一支覆盖 AI 硬件定制、自有品牌孵化、端侧 AI 部署与多模态交互的完整产品团队，提供从 0-1 研发到量产的全部能力。</p>
+      <div class="team-tags">
+        <span>AI 硬件代工</span><span>自有品牌孵化</span><span>端侧 AI 部署</span><span>多模态交互</span><span>AI 软件开发</span>
+      </div>
+    </div>
+    <div class="coop-news reveal">
+      <h3>合作动态</h3>
+      <div class="news-item">
+        <div class="news-date">2026-08</div>
+        <div><h4>与某芯片厂商达成端侧模型适配合作</h4><p>动态内容占位：一句话说明本次合作的方向与价值。</p></div>
+      </div>
+      <div class="news-item">
+        <div class="news-date">2026-07</div>
+        <div><h4>携手某品牌共建 AI 桌面助手生态</h4><p>动态内容占位：一句话说明本次合作的方向与价值。</p></div>
+      </div>
+      <div class="news-item">
+        <div class="news-date">2026-06</div>
+        <div><h4>AI 硬件代工产线完成量产导入</h4><p>动态内容占位：一句话说明本次合作的方向与价值。</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap tc-more reveal">
+    <a class="tc-btn" href="./商务协作.html" target="_blank" rel="noopener">了解团队详情与商务合作 →</a>
+  </div>
+</section>
+
+<!-- 页脚（含服务中心） -->
+<footer id="service">
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <a class="f-brand" href="#top"><img class="f-logo-img" src="./logo-white.png" alt="PISEN 品胜"><span class="f-logo-text">AI Lab</span></a>
+        <p style="font-size:14px;line-height:1.8;max-width:280px;">品牌简介占位：专注 AI 硬件与智能软件体验的创新团队。</p>
+      </div>
+      <div class="f-col"><h5>服务中心</h5><a href="#">申请售后</a><a href="#">服务政策</a><a href="#">保修查询</a><a href="#">服务网点</a></div>
+      <div class="f-col"><h5>关于我们</h5><a href="#">公司介绍</a><a href="#">新闻动态</a><a href="#">加入我们</a></div>
+      <div class="f-col"><h5>联系方式</h5><a href="#">商务合作：biz@example.com</a><a href="#">客服热线：400-000-0000</a><a href="#">社交媒体</a></div>
+    </div>
+    <div class="f-bottom"><span>© 2026 PISEN AI Lab. 版权所有</span><span>备案号占位：粤ICP备00000000号</span></div>
+  </div>
+</footer>
+
+<!-- 登录弹窗 -->
+<div class="login-mask" id="loginMask">
+  <div class="login-card">
+    <button class="login-close" id="loginClose" aria-label="关闭">×</button>
+    <h3>欢迎登录</h3>
+    <p class="login-sub">使用手机号验证码登录 PISEN AI Lab</p>
+    <div class="lg-field"><input id="phoneInput" type="tel" maxlength="11" placeholder="请输入手机号"></div>
+    <div class="lg-field lg-code">
+      <input id="codeInput" type="text" maxlength="6" placeholder="请输入验证码">
+      <button id="sendCodeBtn" type="button">获取验证码</button>
+    </div>
+    <div class="lg-err" id="loginErr"></div>
+    <button class="lg-submit" id="doLoginBtn" type="button">登 录</button>
+    <p class="lg-agree">登录即代表同意《用户协议》与《隐私政策》</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  /* ===== 顶部栏滚动效果 ===== */
+  var topbar = document.getElementById('topbar');
+  window.addEventListener('scroll', function(){
+    topbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  /* ===== Toast ===== */
+  var toast = document.getElementById('toast'), toastTimer;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+  }
+
+  /* ===== 轮播 ===== */
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var dotsBox = document.getElementById('dots');
+  var current = 0, timer = null, DELAY = 4500;
+
+  slides.forEach(function(_, i){
+    var d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' on' : '');
+    d.setAttribute('aria-label', '第 ' + (i+1) + ' 张');
+    d.addEventListener('click', function(){ goTo(i); restart(); });
+    dotsBox.appendChild(d);
+  });
+  var dots = Array.prototype.slice.call(dotsBox.children);
+
+  function goTo(n){
+    var next = (n + slides.length) % slides.length;
+    if (next === current) return;
+    var prev = current;
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add('leaving');
+    setTimeout(function(){ slides[prev].classList.remove('leaving'); }, 700);
+    slides[next].classList.add('active');
+    dots[prev].classList.remove('on');
+    dots[next].classList.add('on');
+    current = next;
+  }
+  function nextSlide(){ goTo(current + 1); }
+  function prevSlide(){ goTo(current - 1); }
+  function restart(){ clearInterval(timer); timer = setInterval(nextSlide, DELAY); }
+
+  document.getElementById('nextBtn').addEventListener('click', function(){ nextSlide(); restart(); });
+  document.getElementById('prevBtn').addEventListener('click', function(){ prevSlide(); restart(); });
+
+  var hero = document.querySelector('.hero');
+  hero.addEventListener('mouseenter', function(){ clearInterval(timer); });
+  hero.addEventListener('mouseleave', restart);
+  restart();
+
+  /* ===== 滚动渐入 ===== */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  /* ===== 表单提交（已迁移至商务协作页） ===== */
+
+  /* ===== 语言 / 登录（演示） ===== */
+  document.getElementById('langBtn').addEventListener('click', function(){ showToast('多语言切换为占位演示'); });
+  /* ===== 登录弹窗 ===== */
+  var loginMask = document.getElementById('loginMask');
+  var phoneInput = document.getElementById('phoneInput');
+  var codeInput = document.getElementById('codeInput');
+  var sendCodeBtn = document.getElementById('sendCodeBtn');
+  var doLoginBtn = document.getElementById('doLoginBtn');
+  var loginErr = document.getElementById('loginErr');
+  var codeTimer = null;
+
+  function setLoggedIn(){
+    var lb = document.getElementById('loginBtn');
+    lb.textContent = '已登录';
+    lb.classList.add('logged-in');
+  }
+  function setLoggedOut(){
+    var lb = document.getElementById('loginBtn');
+    lb.textContent = '登录';
+    lb.classList.remove('logged-in');
+  }
+  try{ if (localStorage.getItem('pisen_login')) setLoggedIn(); }catch(e){}
+
+  function openLogin(){ loginErr.textContent = ''; loginMask.classList.add('show'); setTimeout(function(){ phoneInput.focus(); }, 300); }
+  function closeLogin(){ loginMask.classList.remove('show'); }
+  function validPhone(){ return /^1\d{10}$/.test(phoneInput.value.trim()); }
+
+  var loginBtnEl = document.getElementById('loginBtn');
+  loginBtnEl.addEventListener('click', function(){
+    if (this.classList.contains('logged-in')){
+      try{ localStorage.removeItem('pisen_login'); }catch(e){}
+      setLoggedOut();
+      showToast('已退出登录');
+    } else openLogin();
+  });
+  loginBtnEl.addEventListener('mouseenter', function(){ if (this.classList.contains('logged-in')) this.textContent = '退出登录'; });
+  loginBtnEl.addEventListener('mouseleave', function(){ if (this.classList.contains('logged-in')) this.textContent = '已登录'; });
+  document.getElementById('loginClose').addEventListener('click', closeLogin);
+  loginMask.addEventListener('click', function(e){ if (e.target === loginMask) closeLogin(); });
+
+  sendCodeBtn.addEventListener('click', function(){
+    if (!validPhone()){ loginErr.textContent = '请输入正确的 11 位手机号'; phoneInput.focus(); return; }
+    loginErr.textContent = '';
+    showToast('验证码已发送（演示环境，任意验证码可登录）');
+    var s = 60;
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.textContent = s + 's 后重发';
+    codeTimer = setInterval(function(){
+      s--;
+      if (s <= 0){ clearInterval(codeTimer); sendCodeBtn.disabled = false; sendCodeBtn.textContent = '获取验证码'; }
+      else sendCodeBtn.textContent = s + 's 后重发';
+    }, 1000);
+  });
+
+  doLoginBtn.addEventListener('click', function(){
+    if (!validPhone()){ loginErr.textContent = '请输入正确的 11 位手机号'; return; }
+    if (!/^\d{4,6}$/.test(codeInput.value.trim())){ loginErr.textContent = '请输入 4–6 位数字验证码'; return; }
+    loginErr.textContent = '';
+    doLoginBtn.textContent = '✓ 登录成功';
+    doLoginBtn.classList.add('ok');
+    setTimeout(function(){
+      closeLogin();
+      try{ localStorage.setItem('pisen_login', phoneInput.value.trim()); }catch(e){}
+      setLoggedIn();
+      showToast('登录成功，欢迎回来（演示）');
+      doLoginBtn.textContent = '登 录';
+      doLoginBtn.classList.remove('ok');
+    }, 900);
+  });
+})();
+</script>
+</body>
+</html>
