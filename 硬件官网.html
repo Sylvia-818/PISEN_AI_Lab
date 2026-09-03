@@ -43,8 +43,9 @@
   .btn-ghost.logged-in:hover{ background:rgba(239,68,68,.14); border-color:rgba(248,113,113,.6); color:#FCA5A5; }
 
   /* ===== 模块1 轮播 ===== */
-  .hero{ position:relative; background:radial-gradient(1200px 600px at 70% 20%, #1E293B 0%, var(--dark) 60%);
-    color:#fff; min-height:600px; overflow:hidden; }
+  .hero{ position:relative; height:600px; min-height:600px; max-height:600px;
+    background:radial-gradient(1200px 600px at 70% 20%, #1E293B 0%, var(--dark) 60%);
+    color:#fff; overflow:hidden; }
   .hero::after{ content:""; position:absolute; right:-160px; top:80px; width:640px; height:640px; border-radius:50%;
     background:radial-gradient(circle, rgba(6,182,212,.22), transparent 65%); pointer-events:none; }
   .slides{ position:relative; height:600px; }

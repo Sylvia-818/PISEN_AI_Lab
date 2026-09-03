@@ -48,8 +48,9 @@
   .btn-solid:hover{ transform:translateY(-2px); box-shadow:0 12px 30px rgba(37,99,235,.5); }
 
   /* 模块1：首屏（深色 · 居中） */
-  .hero{ position:relative; background:radial-gradient(1100px 560px at 75% 15%, #1E293B 0%, var(--dark) 60%);
-    color:#fff; text-align:center; min-height:600px; padding:120px 0 80px; overflow:hidden; }
+  .hero{ position:relative; height:600px; min-height:600px; max-height:600px;
+    display:flex; align-items:center; background:radial-gradient(1100px 560px at 75% 15%, #1E293B 0%, var(--dark) 60%);
+    color:#fff; text-align:center; padding:0; overflow:hidden; }
   .hero::after{ content:""; position:absolute; left:-180px; bottom:-120px; width:560px; height:560px; border-radius:50%;
     background:radial-gradient(circle, rgba(37,99,235,.2), transparent 65%); pointer-events:none; }
   .tag{ display:inline-block; font-size:13px; letter-spacing:2px; color:#7DD3FC; border:1px solid rgba(125,211,252,.35);
