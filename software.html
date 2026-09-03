@@ -27,6 +27,12 @@
   .f-logo-img{ height:38px; display:block; }
   .f-logo-text{ color:#fff; font-weight:700; font-size:20px; letter-spacing:1px; border-left:1px solid rgba(148,163,184,.35); padding-left:14px; white-space:nowrap; }
   .top-actions{ display:flex; align-items:center; gap:14px; }
+  .main-nav{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:flex; gap:38px; }
+  .main-nav a{ color:#CBD5E1; font-size:14px; padding:6px 0; position:relative; transition:color .2s; }
+  .main-nav a:hover{ color:#fff; }
+  .main-nav a::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:2px; border-radius:2px;
+    background:var(--grad); transform:scaleX(0); transform-origin:left; transition:transform .25s; }
+  .main-nav a:hover::after{ transform:scaleX(1); }
   .lang{ color:#CBD5E1; font-size:14px; border:1px solid rgba(255,255,255,.25); border-radius:999px; padding:7px 16px;
     cursor:pointer; user-select:none; transition:border-color .2s; }
   .lang:hover{ border-color:rgba(255,255,255,.6); }
@@ -206,9 +212,15 @@
 </head>
 <body>
 
-<!-- 顶部栏：左 Logo / 右 中英文切换 + 登录 + 下载 -->
+<!-- 顶部栏：左 Logo / 中 导航 / 右 中英文切换 + 登录 + 下载 -->
 <header class="topbar" id="topbar">
   <a class="logo" href="#top"><img class="logo-img" src="./logo-white.png" alt="PISEN 品胜"><span class="logo-text">AI Lab</span></a>
+  <nav class="main-nav">
+    <a href="#top">APP下载</a>
+    <a href="./index.html#contact">商务协作</a>
+    <a href="#service">职业发展</a>
+    <a href="#service">服务与支持</a>
+  </nav>
   <div class="top-actions">
     <div class="lang" id="langBtn" title="语言切换（演示）"><b>中</b> / EN</div>
     <a class="btn-ghost" id="loginBtn">登录</a>
@@ -348,7 +360,7 @@
 </section>
 
 <!-- 页脚（含服务中心） -->
-<footer>
+<footer id="service">
   <div class="wrap">
     <div class="f-grid">
       <div>
