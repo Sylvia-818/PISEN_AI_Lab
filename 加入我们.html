@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>加入我们 · PISEN AI Lab</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --dark:#0B0F1A; --ink:#0F172A; --sub:#475569; --line:#E2E8F0;
+    --accent:#2563EB; --accent2:#06B6D4; --grad:linear-gradient(135deg,#2563EB,#06B6D4);
+  }
+  html{ scroll-behavior:smooth; }
+  body{ font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif; color:var(--ink); background:#fff; }
+  a{ text-decoration:none; color:inherit; }
+  .wrap{ max-width:1200px; margin:0 auto; padding:0 24px; }
+
+  /* ===== 顶部栏 ===== */
+  .topbar{ position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between; padding:22px 48px;
+    transition:background .35s, box-shadow .35s, padding .35s; }
+  .topbar.scrolled{ background:rgba(7,11,19,.85); backdrop-filter:blur(14px); padding:14px 48px;
+    box-shadow:0 4px 24px rgba(0,0,0,.35); }
+  .logo{ display:flex; align-items:center; gap:14px; }
+  .logo-img{ height:32px; display:block; }
+  .logo-text{ color:#fff; font-weight:700; font-size:20px; letter-spacing:1px; border-left:1px solid rgba(255,255,255,.3); padding-left:14px; }
+  .f-logo-img{ height:38px; display:block; }
+  .f-logo-text{ color:#fff; font-weight:700; font-size:20px; letter-spacing:1px; border-left:1px solid rgba(148,163,184,.35); padding-left:14px; white-space:nowrap; }
+  .top-actions{ display:flex; align-items:center; gap:14px; }
+  .main-nav{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:flex; gap:38px; }
+  .main-nav a{ color:#CBD5E1; font-size:14px; padding:6px 0; position:relative; transition:color .2s; }
+  .main-nav a:hover{ color:#fff; }
+  .main-nav a::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:2px; border-radius:2px;
+    background:var(--grad); transform:scaleX(0); transform-origin:left; transition:transform .25s; }
+  .main-nav a:hover::after{ transform:scaleX(1); }
+  .main-nav a.on{ color:#fff; }
+  .main-nav a.on::after{ transform:scaleX(1); }
+  .lang{ color:#CBD5E1; font-size:14px; border:1px solid rgba(255,255,255,.25); border-radius:999px; padding:7px 16px;
+    cursor:pointer; user-select:none; transition:border-color .2s; }
+  .lang:hover{ border-color:rgba(255,255,255,.6); }
+  .lang b{ color:#fff; font-weight:600; }
+  .btn-ghost{ color:#fff; font-size:14px; border:1px solid rgba(255,255,255,.4); border-radius:999px; padding:8px 22px;
+    transition:background .2s,border-color .2s; cursor:pointer; }
+  .btn-ghost:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.7); }
+  .btn-ghost.logged-in:hover{ background:rgba(239,68,68,.14); border-color:rgba(248,113,113,.6); color:#FCA5A5; }
+
+  /* ===== 模块1 首屏 ===== */
+  .hero{ position:relative; background:radial-gradient(1100px 560px at 75% 15%, #1E293B 0%, var(--dark) 60%);
+    color:#fff; min-height:560px; display:flex; align-items:center; overflow:hidden; padding:150px 0 100px;
+    text-align:center; }
+  .hero::after{ content:""; position:absolute; left:-180px; bottom:-120px; width:560px; height:560px; border-radius:50%;
+    background:radial-gradient(circle, rgba(37,99,235,.2), transparent 65%); pointer-events:none; }
+  .tag{ display:inline-block; font-size:13px; letter-spacing:2px; color:#7DD3FC; border:1px solid rgba(125,211,252,.35);
+    border-radius:999px; padding:6px 16px; margin-bottom:26px; }
+  .hero h1{ font-size:52px; line-height:1.15; font-weight:800; margin-bottom:20px; }
+  .hero h1 span{ background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero p{ color:#94A3B8; font-size:18px; line-height:1.8; max-width:560px; margin:0 auto 36px; }
+  .hero-cta{ display:flex; gap:16px; justify-content:center; }
+  .hero-cta .primary{ background:var(--grad); color:#fff; font-weight:600; padding:14px 34px; border-radius:999px; font-size:15px;
+    box-shadow:0 10px 30px rgba(37,99,235,.4); transition:transform .2s; }
+  .hero-cta .primary:hover{ transform:translateY(-2px); }
+
+  /* ===== 通用 ===== */
+  section{ padding:100px 0; }
+  .reveal{ opacity:0; transform:translateY(36px); transition:opacity .8s ease, transform .8s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  /* ===== 模块2 招聘流程 ===== */
+  .proc{ background:#fff; }
+  .proc-title{ font-size:44px; font-weight:800; line-height:1.2; margin-bottom:28px; }
+  .proc-intro{ display:grid; grid-template-columns:1fr 1fr; gap:56px; margin-bottom:60px; }
+  .proc-intro p{ color:var(--sub); font-size:15px; line-height:1.9; }
+  .proc-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
+  .proc-card{ background:#F8FAFC; border:1px solid var(--line); border-radius:24px; padding:34px 26px 38px;
+    text-align:center; transition:transform .35s, box-shadow .35s, border-color .35s; }
+  .proc-card:hover{ transform:translateY(-6px); border-color:rgba(37,99,235,.35); box-shadow:0 24px 50px rgba(37,99,235,.12); }
+  .proc-num{ width:34px; height:34px; border-radius:50%; background:var(--grad); color:#fff; font-size:14px; font-weight:800;
+    display:flex; align-items:center; justify-content:center; margin-bottom:24px; }
+  .proc-ico{ width:76px; height:76px; margin:0 auto 22px; border-radius:20px;
+    background:linear-gradient(135deg,#DBEAFE,#CFFAFE); display:flex; align-items:center; justify-content:center; }
+  .proc-ico svg{ width:38px; height:38px; stroke:var(--accent); }
+  .proc-card h3{ font-size:19px; margin-bottom:12px; }
+  .proc-card p{ color:var(--sub); font-size:13.5px; line-height:1.8; }
+
+  /* ===== 模块3 开放职位 ===== */
+  .jobs{ background:#F8FAFC; }
+  .jobs-grid{ display:grid; grid-template-columns:280px 1fr; gap:64px; align-items:start; }
+  .jobs-side{ position:sticky; top:110px; }
+  .jobs-side h2{ font-size:44px; font-weight:800; line-height:1.2; margin-bottom:26px; }
+  .jobs-toggle{ display:inline-flex; background:#fff; border:1px solid var(--line); border-radius:999px; padding:5px; gap:4px; }
+  .jt{ padding:9px 22px; border-radius:999px; font-size:14px; color:var(--sub); cursor:pointer; user-select:none;
+    transition:all .25s; border:none; background:transparent; font-family:inherit; }
+  .jt.on{ background:var(--grad); color:#fff; font-weight:600; box-shadow:0 6px 16px rgba(37,99,235,.3); }
+  .job-group{ margin-bottom:44px; }
+  .job-group h4{ font-size:13px; letter-spacing:3px; color:var(--sub); font-weight:700; margin-bottom:16px; }
+  .job-card{ background:#fff; border:1px solid var(--line); border-radius:18px; padding:26px 30px; margin-bottom:14px;
+    cursor:pointer; transition:border-color .3s, box-shadow .3s; }
+  .job-card:hover{ border-color:rgba(37,99,235,.4); box-shadow:0 14px 34px rgba(15,23,42,.07); }
+  .job-head{ display:flex; align-items:center; justify-content:space-between; gap:20px; }
+  .job-head h3{ font-size:18px; font-weight:700; margin-bottom:6px; }
+  .job-meta{ color:var(--sub); font-size:13.5px; }
+  .job-more{ flex:none; color:var(--accent); font-size:14px; font-weight:600; white-space:nowrap; transition:transform .3s; }
+  .job-detail{ max-height:0; overflow:hidden; transition:max-height .45s ease; }
+  .job-card.open .job-detail{ max-height:400px; }
+  .job-detail-in{ padding-top:20px; margin-top:20px; border-top:1px dashed var(--line); }
+  .job-detail-in p{ color:var(--sub); font-size:14px; line-height:1.85; margin-bottom:10px; }
+  .job-apply{ display:inline-block; margin-top:8px; background:var(--ink); color:#fff; font-size:13px; font-weight:600;
+    padding:10px 26px; border-radius:999px; transition:opacity .2s, transform .2s; }
+  .job-apply:hover{ opacity:.85; transform:translateY(-1px); }
+
+  /* ===== 模块4 常见问题 ===== */
+  .faq{ background:#fff; }
+  .faq-title{ font-size:38px; font-weight:800; margin-bottom:48px; }
+  .faq-item{ border-bottom:1px solid var(--line); }
+  .faq-q{ display:flex; align-items:center; justify-content:space-between; gap:20px; padding:26px 8px;
+    cursor:pointer; font-size:17px; font-weight:600; transition:color .2s; user-select:none; }
+  .faq-q:hover{ color:var(--accent); }
+  .faq-arrow{ flex:none; width:32px; height:32px; border-radius:50%; border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; color:var(--sub); font-size:14px; transition:all .3s; }
+  .faq-item.open .faq-arrow{ transform:rotate(180deg); background:var(--grad); border-color:transparent; color:#fff; }
+  .faq-a{ max-height:0; overflow:hidden; transition:max-height .4s ease; }
+  .faq-item.open .faq-a{ max-height:300px; }
+  .faq-a p{ padding:0 8px 26px; color:var(--sub); font-size:15px; line-height:1.9; max-width:820px; }
+  .faq-foot{ text-align:center; margin-top:48px; }
+  .faq-btn{ display:inline-block; background:var(--ink); color:#fff; font-size:15px; font-weight:600; padding:15px 44px;
+    border-radius:8px; border:none; cursor:pointer; font-family:inherit; transition:opacity .2s, transform .2s; }
+  .faq-btn:hover{ opacity:.85; transform:translateY(-2px); }
+
+  /* 反馈弹窗 */
+  .fb-mask{ position:fixed; inset:0; z-index:300; background:rgba(2,6,23,.62); backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:opacity .3s, visibility .3s; }
+  .fb-mask.show{ opacity:1; visibility:visible; }
+  .fb-card{ position:relative; width:440px; max-width:calc(100vw - 48px); background:#111827; border:1px solid rgba(148,163,184,.25);
+    border-radius:24px; padding:40px 38px 32px; box-shadow:0 40px 90px rgba(0,0,0,.5);
+    transform:translateY(24px) scale(.96); transition:transform .35s; }
+  .fb-mask.show .fb-card{ transform:none; }
+  .fb-card h3{ color:#fff; font-size:22px; font-weight:800; margin-bottom:6px; }
+  .fb-card>p{ color:#94A3B8; font-size:13px; margin-bottom:26px; }
+  .fb-close{ position:absolute; top:16px; right:18px; width:34px; height:34px; border:none; border-radius:50%;
+    background:rgba(255,255,255,.08); color:#94A3B8; font-size:18px; cursor:pointer; transition:background .2s,color .2s; }
+  .fb-close:hover{ background:rgba(255,255,255,.16); color:#fff; }
+  .fb-field{ margin-bottom:14px; }
+  .fb-field input,.fb-field textarea{ width:100%; background:rgba(255,255,255,.06); border:1px solid rgba(148,163,184,.3);
+    border-radius:12px; padding:13px 16px; color:#E2E8F0; font-size:14px; font-family:inherit; outline:none; transition:border-color .2s; }
+  .fb-field input:focus,.fb-field textarea:focus{ border-color:var(--accent2); }
+  .fb-field textarea{ height:110px; resize:none; }
+  .fb-submit{ width:100%; background:var(--grad); color:#fff; border:none; border-radius:12px; padding:15px; cursor:pointer;
+    font-size:15px; font-weight:700; font-family:inherit; box-shadow:0 10px 26px rgba(37,99,235,.35); transition:transform .2s; }
+  .fb-submit:hover{ transform:translateY(-2px); }
+  .fb-submit.sent{ background:linear-gradient(135deg,#059669,#10B981); pointer-events:none; }
+
+  /* ===== 页脚 ===== */
+  footer{ background:#070B13; color:#94A3B8; padding:72px 0 36px; }
+  .f-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:48px; padding-bottom:48px; border-bottom:1px solid rgba(148,163,184,.15); }
+  .f-brand{ color:#fff; font-weight:700; font-size:18px; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+  .f-col h5{ color:#fff; font-size:15px; margin-bottom:18px; }
+  .f-col a{ display:block; font-size:14px; margin-bottom:12px; transition:color .2s; }
+  .f-col a:hover{ color:#fff; }
+  .f-bottom{ display:flex; justify-content:space-between; padding-top:28px; font-size:13px; color:#64748B; }
+
+  /* 登录弹窗 */
+  .login-mask{ position:fixed; inset:0; z-index:300; background:rgba(2,6,23,.62); backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:opacity .3s, visibility .3s; }
+  .login-mask.show{ opacity:1; visibility:visible; }
+  .login-card{ position:relative; width:400px; max-width:calc(100vw - 48px); background:#111827; border:1px solid rgba(148,163,184,.25);
+    border-radius:24px; padding:42px 40px 34px; box-shadow:0 40px 90px rgba(0,0,0,.5);
+    transform:translateY(24px) scale(.96); transition:transform .35s; }
+  .login-mask.show .login-card{ transform:none; }
+  .login-close{ position:absolute; top:16px; right:18px; width:34px; height:34px; border:none; border-radius:50%;
+    background:rgba(255,255,255,.08); color:#94A3B8; font-size:18px; cursor:pointer; transition:background .2s,color .2s; }
+  .login-close:hover{ background:rgba(255,255,255,.16); color:#fff; }
+  .login-card h3{ color:#fff; font-size:24px; font-weight:800; margin-bottom:8px; }
+  .login-sub{ color:#94A3B8; font-size:14px; margin-bottom:28px; }
+  .lg-field{ margin-bottom:16px; }
+  .lg-field input{ width:100%; background:rgba(255,255,255,.06); border:1px solid rgba(148,163,184,.3); border-radius:12px;
+    padding:14px 16px; color:#E2E8F0; font-size:15px; font-family:inherit; outline:none; transition:border-color .2s; }
+  .lg-field input:focus{ border-color:var(--accent2); }
+  .lg-code{ display:flex; gap:12px; }
+  .lg-code input{ flex:1; }
+  .lg-code button{ flex:none; padding:0 18px; border-radius:12px; border:1px solid rgba(103,232,249,.5); background:transparent;
+    color:#67E8F9; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .2s; white-space:nowrap; }
+  .lg-code button:hover:not(:disabled){ background:rgba(34,211,238,.12); }
+  .lg-code button:disabled{ opacity:.45; cursor:not-allowed; }
+  .lg-err{ min-height:20px; color:#F87171; font-size:13px; margin-bottom:12px; }
+  .lg-submit{ width:100%; padding:15px; border:none; border-radius:12px; background:var(--grad); color:#fff;
+    font-size:16px; font-weight:700; font-family:inherit; cursor:pointer; box-shadow:0 10px 26px rgba(37,99,235,.35);
+    transition:transform .2s; }
+  .lg-submit:hover{ transform:translateY(-2px); }
+  .lg-submit.ok{ background:linear-gradient(135deg,#059669,#10B981); pointer-events:none; }
+  .lg-agree{ margin-top:18px; text-align:center; color:#64748B; font-size:12px; }
+
+  /* Toast 提示 */
+  .toast{ position:fixed; bottom:36px; left:50%; transform:translate(-50%, 80px); background:var(--ink); color:#fff;
+    padding:13px 28px; border-radius:999px; font-size:14px; z-index:400; opacity:0; transition:all .4s; pointer-events:none;
+    box-shadow:0 16px 40px rgba(0,0,0,.3); }
+  .toast.show{ opacity:1; transform:translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+<!-- 顶部栏：左 Logo / 中 导航 / 右 中英文切换 + 登录 -->
+<header class="topbar" id="topbar">
+  <a class="logo" href="./硬件官网.html"><img class="logo-img" src="./logo-white.png" alt="PISEN 品胜"><span class="logo-text">AI Lab</span></a>
+  <nav class="main-nav">
+    <a href="./软件官网.html" target="_blank" rel="noopener">APP下载</a>
+    <a href="./商务协作.html" target="_blank" rel="noopener">商务协作</a>
+    <a href="#top" class="on">加入我们</a>
+    <a href="./服务与支持.html" target="_blank" rel="noopener">服务与支持</a>
+  </nav>
+  <div class="top-actions">
+    <div class="lang" id="langBtn" title="语言切换（演示）"><b>中</b> / EN</div>
+    <a class="btn-ghost" id="loginBtn">登录</a>
+  </div>
+</header>
+
+<!-- 模块1：首屏 -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="tag">JOIN US</div>
+    <h1>加入我们<br><span>与 PISEN AI Lab 一起定义 AI 未来</span></h1>
+    <p>团队理念占位：我们相信最好的 AI 产品诞生于对用户体验的极致追求。在这里，你将和一群热爱硬件与算法的人一起，把想法变成千万用户手中的产品。</p>
+    <div class="hero-cta">
+      <a class="primary" href="#jobs">查看开放职位 ↓</a>
+    </div>
+  </div>
+</section>
+
+<!-- 模块2：招聘流程 -->
+<section class="proc">
+  <div class="wrap">
+    <h2 class="proc-title reveal">招聘流程</h2>
+    <div class="proc-intro reveal">
+      <p>招聘在双向交流时效果最佳。我们帮助你了解 PISEN AI Lab，并展望你在团队中未来可能的角色，整个流程透明、高效。</p>
+      <p>我们会根据你的时间安排和当前在职状态，遵循灵活的时间表。关于过程中如何处理你的个人信息，请参阅我们的招聘信息政策（占位）。</p>
+    </div>
+    <div class="proc-grid">
+      <div class="proc-card reveal">
+        <div class="proc-num">1</div>
+        <div class="proc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
+        <h3>简历投递</h3>
+        <p>通过官网或内推渠道投递简历，我们的 HR 团队将在 3 个工作日内完成初筛并反馈。</p>
+      </div>
+      <div class="proc-card reveal">
+        <div class="proc-num">2</div>
+        <div class="proc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg></div>
+        <h3>电话沟通</h3>
+        <p>简历通过后，人才经理会邀请你参加简短的电话会议，初步了解彼此的方向与期望。</p>
+      </div>
+      <div class="proc-card reveal">
+        <div class="proc-num">3</div>
+        <div class="proc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M21 11h-6M21 7h-6M21 15h-6"/></svg></div>
+        <h3>面试沟通</h3>
+        <p>与团队进行 2–3 轮深入交流，专业能力与团队协作并重，让彼此更了解。</p>
+      </div>
+      <div class="proc-card reveal">
+        <div class="proc-num">4</div>
+        <div class="proc-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="m9 15 2 2 4-4"/></svg></div>
+        <h3>Offer 审批与发放</h3>
+        <p>如果大家都觉得合适，我们会尽快完成审批，给你一个加入的邀请。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 模块3：开放职位 -->
+<section class="jobs" id="jobs">
+  <div class="wrap jobs-grid">
+    <div class="jobs-side reveal">
+      <h2>开放职位</h2>
+      <div class="jobs-toggle">
+        <button class="jt on" data-type="campus">校园招聘</button>
+        <button class="jt" data-type="social">社会招聘</button>
+      </div>
+    </div>
+    <div class="jobs-list reveal" id="jobsList"></div>
+  </div>
+</section>
+
+<!-- 模块4：查看常见问题 -->
+<section class="faq">
+  <div class="wrap">
+    <h2 class="faq-title reveal">查看常见问题</h2>
+    <div class="reveal">
+      <div class="faq-item">
+        <div class="faq-q">如何投递心仪岗位？<span class="faq-arrow">⌄</span></div>
+        <div class="faq-a"><p>答案占位：在开放职位列表中找到心仪岗位，点击「投递简历」按提示提交即可；也可以通过内推渠道投递。</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">可以投递多个职位吗？<span class="faq-arrow">⌄</span></div>
+        <div class="faq-a"><p>答案占位：可以，但建议优先选择最匹配的 1–2 个岗位，面试流程会分别进行。</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">投递后预计会经历哪些招聘流程？<span class="faq-arrow">⌄</span></div>
+        <div class="faq-a"><p>答案占位：简历投递 → 电话沟通 → 面试沟通 → Offer 审批与发放，整体周期约 2–4 周。</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">暑期实习做过测评，校招还需要重测吗？测评未通过还有机会再测吗？<span class="faq-arrow">⌄</span></div>
+        <div class="faq-a"><p>答案占位：实习测评结果在一定期限内有效，具体以 HR 通知为准；未通过者可在下一批次再次申请。</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">如何查询投递进度？<span class="faq-arrow">⌄</span></div>
+        <div class="faq-a"><p>答案占位：投递后会收到确认邮件，可通过邮件中的链接查询进度，或联系招聘邮箱咨询。</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">是否有宣讲会或线下活动？<span class="faq-arrow">⌄</span></div>
+        <div class="faq-a"><p>答案占位：校招季我们会在重点高校举办宣讲会，具体安排请关注官方通知。</p></div>
+      </div>
+    </div>
+    <div class="faq-foot reveal">
+      <button class="faq-btn" id="fbOpenBtn">更多问题与建议</button>
+    </div>
+  </div>
+</section>
+
+<!-- 页脚（含服务中心） -->
+<footer id="service">
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <a class="f-brand" href="./硬件官网.html"><img class="f-logo-img" src="./logo-white.png" alt="PISEN 品胜"><span class="f-logo-text">AI Lab</span></a>
+        <p style="font-size:14px;line-height:1.8;max-width:280px;">品牌简介占位：专注 AI 硬件与智能软件体验的创新团队。</p>
+      </div>
+      <div class="f-col"><h5>服务中心</h5><a href="#">申请售后</a><a href="#">服务政策</a><a href="#">保修查询</a><a href="#">服务网点</a></div>
+      <div class="f-col"><h5>关于我们</h5><a href="#">公司介绍</a><a href="#">新闻动态</a><a href="./加入我们.html">加入我们</a></div>
+      <div class="f-col"><h5>联系方式</h5><a href="#">商务合作：biz@example.com</a><a href="#">客服热线：400-000-0000</a><a href="#">社交媒体</a></div>
+    </div>
+    <div class="f-bottom"><span>© 2026 PISEN AI Lab. 版权所有</span><span>备案号占位：粤ICP备00000000号</span></div>
+  </div>
+</footer>
+
+<!-- 反馈弹窗 -->
+<div class="fb-mask" id="fbMask">
+  <div class="fb-card">
+    <button class="fb-close" id="fbClose" aria-label="关闭">×</button>
+    <h3>更多问题与建议</h3>
+    <p>留下你的问题或建议，我们会尽快回复。</p>
+    <form id="fbForm">
+      <div class="fb-field"><input placeholder="姓名" required></div>
+      <div class="fb-field"><input placeholder="电话"></div>
+      <div class="fb-field"><input placeholder="邮箱" required></div>
+      <div class="fb-field"><textarea placeholder="留言" required></textarea></div>
+      <button class="fb-submit" type="submit">提 交</button>
+    </form>
+  </div>
+</div>
+
+<!-- 登录弹窗 -->
+<div class="login-mask" id="loginMask">
+  <div class="login-card">
+    <button class="login-close" id="loginClose" aria-label="关闭">×</button>
+    <h3>欢迎登录</h3>
+    <p class="login-sub">使用手机号验证码登录 PISEN AI Lab</p>
+    <div class="lg-field"><input id="phoneInput" type="tel" maxlength="11" placeholder="请输入手机号"></div>
+    <div class="lg-field lg-code">
+      <input id="codeInput" type="text" maxlength="6" placeholder="请输入验证码">
+      <button id="sendCodeBtn" type="button">获取验证码</button>
+    </div>
+    <div class="lg-err" id="loginErr"></div>
+    <button class="lg-submit" id="doLoginBtn" type="button">登 录</button>
+    <p class="lg-agree">登录即代表同意《用户协议》与《隐私政策》</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  /* ===== 顶部栏滚动效果 ===== */
+  var topbar = document.getElementById('topbar');
+  window.addEventListener('scroll', function(){
+    topbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  /* ===== Toast ===== */
+  var toast = document.getElementById('toast'), toastTimer;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+  }
+
+  /* ===== 滚动渐入 ===== */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  /* ===== 开放职位数据（占位） ===== */
+  var JOBS = {
+    campus: [
+      { group:'产品岗', items:[
+        { name:'AI 产品经理（校招）', meta:'深圳 · 全职 · 产品岗', desc:'职责描述占位：参与 AI 硬件产品的需求分析与功能规划，跟进产品从定义到落地的全过程。', req:'要求占位：2026 届本科及以上学历，对 AI 硬件有热情，具备良好的沟通与逻辑能力。' },
+        { name:'AI 软件产品经理（校招）', meta:'深圳 · 全职 · 产品岗', desc:'职责描述占位：负责 App 与云端服务的产品设计，梳理用户场景并推动迭代上线。', req:'要求占位：2026 届本科及以上学历，熟悉移动互联网产品，有产品实习经验优先。' },
+        { name:'AI 硬件产品经理（校招）', meta:'深圳 · 全职 · 产品岗', desc:'职责描述占位：负责 AI 硬件产品的定义与生命周期管理，协调研发、供应链推进量产。', req:'要求占位：2026 届本科及以上学历，电子/计算机相关专业优先。' }
+      ]},
+      { group:'技术岗', items:[
+        { name:'AI 前端应用开发工程师（校招）', meta:'深圳 · 全职 · 技术岗', desc:'职责描述占位：负责 AI 应用的前端开发与交互实现，打造流畅的用户体验。', req:'要求占位：2026 届本科及以上学历，熟悉 JavaScript/TypeScript 与主流前端框架。' },
+        { name:'AI 后端应用开发工程师（校招）', meta:'深圳 · 全职 · 技术岗', desc:'职责描述占位：负责 AI 服务的后端架构与接口开发，保障高并发下的稳定性。', req:'要求占位：2026 届本科及以上学历，熟悉至少一门后端语言与常用数据库。' },
+        { name:'AI 嵌入式工程师（校招）', meta:'深圳 · 全职 · 技术岗', desc:'职责描述占位：负责端侧 AI 模型的部署与固件开发，优化硬件上的推理性能。', req:'要求占位：2026 届本科及以上学历，熟悉 C/C++ 与嵌入式开发环境。' }
+      ]}
+    ],
+    social: [
+      { group:'产品岗', items:[
+        { name:'AI 产品经理', meta:'深圳 · 全职 · 产品岗', desc:'职责描述占位：主导 AI 硬件产品线规划，对产品的商业结果负责。', req:'要求占位：3 年以上产品经验，有 AI 或硬件产品经验者优先。' },
+        { name:'AI 软件产品经理', meta:'深圳 · 全职 · 产品岗', desc:'职责描述占位：负责 App 与订阅服务的体系化设计，推动用户增长与留存。', req:'要求占位：3 年以上互联网产品经验，熟悉订阅制产品优先。' },
+        { name:'AI 硬件产品经理', meta:'深圳 · 全职 · 产品岗', desc:'职责描述占位：负责 AI 硬件从概念到量产的全流程管理。', req:'要求占位：3 年以上硬件产品经验，熟悉量产导入流程。' }
+      ]},
+      { group:'技术岗', items:[
+        { name:'AI 前端应用开发工程师', meta:'深圳 · 全职 · 技术岗', desc:'职责描述占位：负责复杂 AI 应用的前端架构设计与性能优化。', req:'要求占位：3 年以上前端经验，有大型项目架构经验者优先。' },
+        { name:'AI 后端应用开发工程师', meta:'深圳 · 全职 · 技术岗', desc:'职责描述占位：负责 AI 服务平台的核心系统设计与演进。', req:'要求占位：3 年以上后端经验，熟悉分布式系统与高并发设计。' },
+        { name:'AI 嵌入式工程师', meta:'深圳 · 全职 · 技术岗', desc:'职责描述占位：主导端侧 AI 部署方案，负责模型压缩、量化与硬件适配。', req:'要求占位：3 年以上嵌入式经验，熟悉 NPU/DSP 推理框架者优先。' }
+      ]}
+    ]
+  };
+
+  var jobsList = document.getElementById('jobsList');
+  function renderJobs(type){
+    var html = '';
+    JOBS[type].forEach(function(g){
+      html += '<div class="job-group"><h4>' + g.group + '</h4>';
+      g.items.forEach(function(j){
+        html += '<div class="job-card">'
+          + '<div class="job-head"><div><h3>' + j.name + '</h3><div class="job-meta">' + j.meta + '</div></div>'
+          + '<span class="job-more">+ 查看详情</span></div>'
+          + '<div class="job-detail"><div class="job-detail-in"><p>' + j.desc + '</p><p>' + j.req + '</p>'
+          + '<a class="job-apply" href="javascript:void(0)">投递简历 →</a></div></div>'
+          + '</div>';
+      });
+      html += '</div>';
+    });
+    jobsList.innerHTML = html;
+  }
+  renderJobs('campus');
+
+  document.querySelectorAll('.jt').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if (this.classList.contains('on')) return;
+      document.querySelectorAll('.jt').forEach(function(b){ b.classList.remove('on'); });
+      this.classList.add('on');
+      renderJobs(this.dataset.type);
+    });
+  });
+
+  jobsList.addEventListener('click', function(e){
+    var apply = e.target.closest('.job-apply');
+    if (apply){ showToast('投递功能为演示占位，简历投递入口即将上线'); return; }
+    var head = e.target.closest('.job-head');
+    if (head){
+      var card = head.parentElement;
+      card.classList.toggle('open');
+      head.querySelector('.job-more').textContent = card.classList.contains('open') ? '− 收起详情' : '+ 查看详情';
+    }
+  });
+
+  /* ===== FAQ 手风琴 ===== */
+  document.querySelectorAll('.faq-item').forEach(function(item){
+    item.querySelector('.faq-q').addEventListener('click', function(){
+      var open = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function(i){ i.classList.remove('open'); });
+      if (!open) item.classList.add('open');
+    });
+  });
+
+  /* ===== 反馈弹窗 ===== */
+  var fbMask = document.getElementById('fbMask');
+  document.getElementById('fbOpenBtn').addEventListener('click', function(){ fbMask.classList.add('show'); });
+  document.getElementById('fbClose').addEventListener('click', function(){ fbMask.classList.remove('show'); });
+  fbMask.addEventListener('click', function(e){ if (e.target === fbMask) fbMask.classList.remove('show'); });
+  document.getElementById('fbForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var btn = this.querySelector('.fb-submit');
+    btn.textContent = '✓ 已提交，感谢反馈';
+    btn.classList.add('sent');
+    showToast('反馈已提交（演示）');
+    this.reset();
+    setTimeout(function(){
+      btn.textContent = '提 交'; btn.classList.remove('sent'); fbMask.classList.remove('show');
+    }, 1500);
+  });
+
+  /* ===== 语言 / 登录（演示） ===== */
+  document.getElementById('langBtn').addEventListener('click', function(){ showToast('多语言切换为占位演示'); });
+  /* ===== 登录弹窗 ===== */
+  var loginMask = document.getElementById('loginMask');
+  var phoneInput = document.getElementById('phoneInput');
+  var codeInput = document.getElementById('codeInput');
+  var sendCodeBtn = document.getElementById('sendCodeBtn');
+  var doLoginBtn = document.getElementById('doLoginBtn');
+  var loginErr = document.getElementById('loginErr');
+  var codeTimer = null;
+
+  function setLoggedIn(){
+    var lb = document.getElementById('loginBtn');
+    lb.textContent = '已登录';
+    lb.classList.add('logged-in');
+  }
+  function setLoggedOut(){
+    var lb = document.getElementById('loginBtn');
+    lb.textContent = '登录';
+    lb.classList.remove('logged-in');
+  }
+  try{ if (localStorage.getItem('pisen_login')) setLoggedIn(); }catch(e){}
+
+  function openLogin(){ loginErr.textContent = ''; loginMask.classList.add('show'); setTimeout(function(){ phoneInput.focus(); }, 300); }
+  function closeLogin(){ loginMask.classList.remove('show'); }
+  function validPhone(){ return /^1\d{10}$/.test(phoneInput.value.trim()); }
+
+  var loginBtnEl = document.getElementById('loginBtn');
+  loginBtnEl.addEventListener('click', function(){
+    if (this.classList.contains('logged-in')){
+      try{ localStorage.removeItem('pisen_login'); }catch(e){}
+      setLoggedOut();
+      showToast('已退出登录');
+    } else openLogin();
+  });
+  loginBtnEl.addEventListener('mouseenter', function(){ if (this.classList.contains('logged-in')) this.textContent = '退出登录'; });
+  loginBtnEl.addEventListener('mouseleave', function(){ if (this.classList.contains('logged-in')) this.textContent = '已登录'; });
+  document.getElementById('loginClose').addEventListener('click', closeLogin);
+  loginMask.addEventListener('click', function(e){ if (e.target === loginMask) closeLogin(); });
+
+  sendCodeBtn.addEventListener('click', function(){
+    if (!validPhone()){ loginErr.textContent = '请输入正确的 11 位手机号'; phoneInput.focus(); return; }
+    loginErr.textContent = '';
+    showToast('验证码已发送（演示环境，任意验证码可登录）');
+    var s = 60;
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.textContent = s + 's 后重发';
+    codeTimer = setInterval(function(){
+      s--;
+      if (s <= 0){ clearInterval(codeTimer); sendCodeBtn.disabled = false; sendCodeBtn.textContent = '获取验证码'; }
+      else sendCodeBtn.textContent = s + 's 后重发';
+    }, 1000);
+  });
+
+  doLoginBtn.addEventListener('click', function(){
+    if (!validPhone()){ loginErr.textContent = '请输入正确的 11 位手机号'; return; }
+    if (!/^\d{4,6}$/.test(codeInput.value.trim())){ loginErr.textContent = '请输入 4–6 位数字验证码'; return; }
+    loginErr.textContent = '';
+    doLoginBtn.textContent = '✓ 登录成功';
+    doLoginBtn.classList.add('ok');
+    setTimeout(function(){
+      closeLogin();
+      try{ localStorage.setItem('pisen_login', phoneInput.value.trim()); }catch(e){}
+      setLoggedIn();
+      showToast('登录成功，欢迎回来（演示）');
+      doLoginBtn.textContent = '登 录';
+      doLoginBtn.classList.remove('ok');
+    }, 900);
+  });
+})();
+</script>
+</body>
+</html>
